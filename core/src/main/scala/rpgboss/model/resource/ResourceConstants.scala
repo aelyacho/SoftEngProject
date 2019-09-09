@@ -166,8 +166,9 @@ object ResourceConstants {
     startingParty = Array(0),
 
     titlePic = "sys/LordSpirit.jpg",
-    titleMusic =
-      Some(SoundSpec("sys/sean_m_stephens/TitleMoon.mid")),
+    titleMusic = null,
+//    titleMusic =
+//      Some(SoundSpec("sys/sean_m_stephens/TitleMoon.mid")),
 
     gameOverPic = "sys/GameOver.png",
     gameOverMusic =
