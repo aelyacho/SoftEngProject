@@ -53,12 +53,15 @@ function splashScreen() {
 }
 
 function start() {
-  splashScreen();
-  game.playMusic(0, project.data().startup().titleMusic(), true, 0.4);
-  game.showPicture(0, project.data().startup().titlePic(), 
-      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
-  game.setTransition(0, 1.0);
-  game.sleep(1);
+//  splashScreen();
+//  game.playMusic(0, project.data().startup().titleMusic(), true, 0.4);
+//  game.showPicture(0, project.data().startup().titlePic(),
+//      game.layout(game.CENTERED(), game.SCREEN(), 1.0, 1.0));
+//  game.setTransition(0, 0.5);
+//  game.sleep(1);
 
-  showStartDialog();
+//  showStartDialog();
+
+    // Directly start a new game; skip the splash screen and main menu..
+    newGame();
 }
