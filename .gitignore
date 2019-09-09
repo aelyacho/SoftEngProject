@@ -18,3 +18,9 @@ Thumbs.db
 android/build
 core/build
 desktop/build
+out/
+core/out
+desktop/out
+.idea/
+*.iml
+build/*

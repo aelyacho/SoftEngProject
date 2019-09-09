@@ -1,22 +1,22 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven {url "https://plugins.gradle.org/m2/"}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath "com.github.maiflai:gradle-scalatest:0.10"
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.22"
     }
 }
 
-allprojects {
-    apply plugin: "eclipse"
-    apply plugin: "idea"
+subprojects {
+    apply plugin: 'scala'
+    apply plugin: 'application'
+    apply plugin: "com.github.maiflai.scalatest"
 
     version = '1.0'
+    group 'rpgboss'
+
     ext {
         appName = "rpgboss"
         gdxVersion = '1.7.2'
@@ -30,15 +30,16 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
 
-    tasks.withType(ScalaCompile) {
-        scalaCompileOptions.useAnt = false
+    dependencies {
+        compile "org.scala-lang:scala-library:2.11.12"
+        // compile 'log4j:log4j:1.2.17'
+
+        testCompile 'org.scalatest:scalatest_2.11:3.0.5'
+        testRuntime 'org.pegdown:pegdown:1.4.2'
     }
 }
 
 project(":desktop") {
-    apply plugin: "java"
-    apply plugin: "scala"
-
     mainClass = "rpgboss.editor.RpgDesktop"
 
     dependencies {
@@ -48,8 +49,6 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-
-        compile "org.scala-lang:scala-library:2.11.7"
 
         compile "org.apache.commons:commons-compress:1.9"
         compile "org.scala-lang.modules:scala-swing_2.11:2.0.0-M2"
@@ -63,20 +62,11 @@ project(":desktop") {
     tasks.withType(ScalaCompile) {
         configure(scalaCompileOptions.forkOptions) {
             memoryMaximumSize = '1g'
-            jvmArgs = ['-XX:MaxPermSize=512m']
         }
-    }
-    tasks.withType(ScalaCompile) {
-        scalaCompileOptions.useAnt = false
     }
 }
 
 project(":core") {
-    apply plugin: "java"
-    apply plugin: "scala"
-
-    apply plugin: "com.github.maiflai.scalatest"
-
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
@@ -94,8 +84,6 @@ project(":core") {
         compile "org.glassfish.tyrus.bundles:tyrus-standalone-client:1.10"
 
         testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-        testCompile "org.scalatest:scalatest_2.11:2.1.5"
-        testRuntime 'org.pegdown:pegdown:1.1.0'
 
         testCompile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
@@ -108,14 +96,6 @@ project(":core") {
     tasks.withType(ScalaCompile) {
         configure(scalaCompileOptions.forkOptions) {
             memoryMaximumSize = '1g'
-            jvmArgs = ['-XX:MaxPermSize=512m']
         }
     }
-    tasks.withType(ScalaCompile) {
-        scalaCompileOptions.useAnt = false
-    }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }

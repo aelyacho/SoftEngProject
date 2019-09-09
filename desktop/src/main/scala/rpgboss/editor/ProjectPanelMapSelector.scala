@@ -20,9 +20,6 @@ import javax.swing.JTree
 import javax.swing.JComponent
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.StringSelection
-import javax.activation.DataHandler
-import javax.swing.tree.DefaultTreeModel
-import javax.swing.tree.TreeNode
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
 
