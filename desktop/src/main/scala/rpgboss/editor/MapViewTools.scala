@@ -29,11 +29,11 @@ trait MapViewTool {
   def selectionSqOnDrag: Boolean = true
 }
 
+/**
+ * Implements the behaviour of the different map editing tools
+ * */
 object MapViewTools {
 
-  /**
-   *
-   */
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Seq[Autotile],
                        layerAry: Array[Array[Byte]],
                        x0: Int, y0: Int, x1: Int, y1: Int): TileRect = {
@@ -48,11 +48,6 @@ object MapViewTools {
     setAutotileFlags(mapMeta, autotiles, layerAry, initialSeqOfTiles)
   }
 
-  /**
-   * Frankly I don't have a damn clue how this works. I wish I commented it.
-   * Well. This algorithm isn't even really correct for walls. It seems to mess
-   * up in some cases.
-   */
   def setAutotileFlags(mapMeta: RpgMapMetadata, autotiles: Seq[Autotile],
                        layerAry: Array[Array[Byte]],
                        tilesToSet: Seq[(Int, Int)]): TileRect =
@@ -180,6 +175,9 @@ object MapViewTools {
       modifiedRect
     }
 
+  /**
+   * Draw tiles on the map, one by one, with the pencil tool
+   */
   case object Pencil extends MapViewTool {
     val name = "Pencil"
     def onMouseDown(
@@ -221,6 +219,9 @@ object MapViewTools {
     }
   }
 
+  /**
+   * Draw a filled rectangle of the selected tile
+   */
   trait RectLikeTool extends MapViewTool {
     var origLayerBuf: Array[Array[Byte]] = null
     var prevPaintedRegion = TileRect.empty

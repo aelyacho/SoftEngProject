@@ -35,7 +35,9 @@ case class MapState(map: RpgMap,
 }
 
 /**
- * This class manages the dirtiness and saving of all the open maps.
+ * This class manages the project's state.
+ * @param mainPanel   link to access the full RpgBoss editor gui
+ * @param proj        project data
  */
 class StateMaster(mainPanel: MainPanel, private var proj: Project) {
   import Dirtiness._
@@ -97,6 +99,13 @@ class StateMaster(mainPanel: MainPanel, private var proj: Project) {
     mainPanel.updateDirty(this)
   }
 
+  /**
+   * Add a new map to the project
+   * @param map         map metadata
+   * @param mapDataOpt  map data
+   * @param dirty
+   * @return
+   */
   def addMap(
     map: RpgMap,
     mapDataOpt: Option[RpgMapData],

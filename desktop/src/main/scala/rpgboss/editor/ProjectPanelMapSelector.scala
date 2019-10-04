@@ -23,6 +23,11 @@ import java.awt.datatransfer.StringSelection
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
 
+/**
+ * Panel that lists the different maps contained in a project
+ * @param sm
+ * @param projPanel
+ */
 class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
   extends MapSelector(sm) {
   /**
@@ -228,6 +233,11 @@ class ProjectPanelMapSelector(sm: StateMaster, projPanel: ProjectPanel)
     }
   }
 
+  /**
+   * Add a new map to a project
+   * @param newMap
+   * @param newMapData
+   */
   def onNewMap(newMap: RpgMap, newMapData: RpgMapData) = {
     val p = sm.getProj
     sm.setProjData(p.data.copy(

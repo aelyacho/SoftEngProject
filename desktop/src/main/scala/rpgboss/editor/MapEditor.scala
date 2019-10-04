@@ -31,6 +31,9 @@ import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
 
+/**
+ * Panel grouping together the detailed view of the map, with its toolbar (drawing tools, layer selector)
+ */
 class MapEditor(
   projectPanel: ProjectPanel,
   sm: StateMaster,
@@ -419,6 +422,16 @@ class MapEditor(
     }
   }
 
+  /**
+   * Mouse interactions with the detailed map view
+   * @param e       mouse event
+   * @param xTile0  map X-coordinate
+   * @param yTile0  map Y-coordinate
+   * @param vs      state of the map
+   * @return (onlyCallOnTileChange, dragCallback, dragStopCallback)
+   *
+   * onlyCallOnTileChange = only call the dragCallback if the tile is different
+   */
   override def mousePressed(
     e: MousePressed,
     xTile0: Float,
@@ -469,6 +482,7 @@ class MapEditor(
         vs.begin()
 
         val tCodes = tileSelector.selectionBytes
+        // Retrieve the selected drawing tool
         val tool = MapViewToolsEnum.getTool(selectedTool)
 
         setTilePaintSq(tool.selectionSqOnDrag, xTile0, yTile0)

@@ -22,8 +22,8 @@ object RpgDesktop
     import javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE
     peer.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE)
 
+    // Set the contents of the RpgEditor window
     val mainPanel = new MainPanel(this)
-
     contents = mainPanel
 
     override def closeOperation() = {
@@ -63,6 +63,11 @@ object RpgDesktop
     t.visible = true
   }
 
+  /**
+   * Start the RpgBoss editor
+   * (or start a game, using command-line parameters)
+   * @param args
+   */
   override def main(args: Array[String]) {
     if (args.size >= 2 && args.head == "--player") {
       rpgboss.player.LwjglPlayer.main(args.tail)

@@ -13,6 +13,11 @@ import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
+/**
+ * If a project is opened, this BoxPanel contains the editor GUI (ProjectPanel)
+ * If not, this BoxPanel contains the welcome screen (StartPanel)
+ * @param topWin
+ */
 class MainPanel(val topWin: Frame)
   extends BoxPanel(Orientation.Vertical) 
   with LazyLogging {
@@ -86,8 +91,12 @@ class MainPanel(val topWin: Frame)
       }
     }
   }
-  
 
+
+  /**
+   * Open a project
+   * @param p
+   */
   def setProject(p: Project) = {
     val sm = new StateMaster(this, p)
     smOpt = Some(sm)

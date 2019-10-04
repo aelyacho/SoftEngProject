@@ -6,6 +6,9 @@ import java.io._
 import rpgboss.lib.FileHelper._
 import rpgboss.editor.Internationalized._
 
+/**
+ * Read and write properties of the .rpgboss/editor.props file
+ */
 object Settings {
   val props = new Properties()
 

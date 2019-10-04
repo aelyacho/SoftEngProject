@@ -18,6 +18,11 @@ import rpgboss.model.resource._
 import rpgboss.model.event.RpgEvent
 import scalaj.http.Http
 
+/**
+ * Main panel for the editor of a project
+ * @param mainP   parent of this panel
+ * @param sm      state of the project
+ */
 class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   extends BorderPanel
   with SelectsMap {
@@ -51,6 +56,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
     List(tileSelector, mapView).map(_.selectMap(mapOpt))
   }
 
+  // Toolbar
   val topBar = new BoxPanel(Orientation.Horizontal) {
     import rpgboss.editor.dialog._
 
