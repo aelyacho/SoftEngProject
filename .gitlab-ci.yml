@@ -1,0 +1,12 @@
+stages:
+  - build
+  - test
+
+test-job:
+  stage: test
+  script:
+    - Xvfb :10 -ac -screen 0 1024x768x24 &
+    - export JAVA_HOME=/exports/home/tmoldere/jdk1.8.0_102
+    - DISPLAY=:10 ./gradlew ":desktop:reportScoverage"
+    - pkill Xvfb
+    - cp -R desktop/build/reports ~/public_html/se3_1920
