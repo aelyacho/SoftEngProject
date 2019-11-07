@@ -6,7 +6,7 @@ import java.util.Scanner
 import java.awt.Desktop
 import java.net.URL
 import scala.collection.JavaConversions._
-import scala.swing._
+import scala.swing.{Point=>SwingPoint, _}
 import javax.swing.ImageIcon
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.dialog.ExportDialog
@@ -32,7 +32,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
   val window = mainP.getWindow()
   window.resizable = true
-  window.location = new Point(0,0)
+  window.location = new SwingPoint(0,0)
 
   val screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 

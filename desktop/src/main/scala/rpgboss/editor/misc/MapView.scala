@@ -9,7 +9,7 @@ import rpgboss.editor._
 import rpgboss.editor.misc.GraphicsUtils._
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import scala.math._
-import scala.swing._
+import scala.swing.{Point=>SwingPoint, _}
 import scala.swing.event._
 import javax.imageio._
 import java.awt.{ BasicStroke, AlphaComposite, Color }
@@ -192,7 +192,7 @@ class MapView(
       val viewOrigX = max(0f, cx * curTilesize - viewportW / 2)
       val viewOrigY = max(0f, cy * curTilesize - viewportH / 2)
 
-      viewport.setViewPosition(new Point(viewOrigX.toInt, viewOrigY.toInt))
+      viewport.setViewPosition(new SwingPoint(viewOrigX.toInt, viewOrigY.toInt))
     }
 
     def restoreCenters() = viewStateOpt.map { vs =>
@@ -207,9 +207,9 @@ class MapView(
   contents += scrollPane
 
   //--- MISC FUNCTIONS ---//
-  def toTileCoords(p: Point): (Float, Float) =
+  def toTileCoords(p: SwingPoint): (Float, Float) =
     (p.getX.toFloat / curTilesize, p.getY.toFloat / curTilesize)
-  def toTileCoordsInt(p: Point): (Int, Int) = {
+  def toTileCoordsInt(p: SwingPoint): (Int, Int) = {
     val (xTileFloat, yTileFloat) = toTileCoords(p)
     (xTileFloat.toInt, yTileFloat.toInt)
   }
