@@ -102,7 +102,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   val autotileByte: Byte = -2
   val emptyTileByte: Byte = -1
 
-  def autotileSeed = Array[Byte](autotileByte, 1, 1)
+  def autotileSeed = Array[Byte](autotileByte, 0, 0)
   def emptyTileSeed = Array[Byte](emptyTileByte, 0, 0)
 
   /**
