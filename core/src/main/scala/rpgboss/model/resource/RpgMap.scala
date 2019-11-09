@@ -181,7 +181,9 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
         new Node[Container](c, splitContainer(sr(0), iter-1), splitContainer(sr(1), iter-1))
       }
     }
-    splitContainer(Container(0, 0, width, height), iter)
+    val tree = splitContainer(Container(0, 0, width, height), iter)
+    mapInfo.createRepr(tree)
+    tree
   }
 
   def drawTree(a: Array[Array[Byte]], t: Btree[Container]): Unit ={
