@@ -76,6 +76,19 @@ case class RpgEventState(
   var runOnceThenIncrementState: Boolean = false,
 
   var cmds: Array[EventCmd] = Array()) {
+  override def toString() : String = {
+    "------------------------ RPG EVENT STATE VARIABLES------------------------\n"+
+      s"Conditions: ${conditions map(cond => println(cond))} \n " +
+      s"Sprite: $sprite\n" +
+        s"Height: $height\n" +
+      s"affix dir: $affixDirection\n" +
+      s"trigger: $trigger\n" +
+      s"animationType: $animationType\n" +
+      s"runOncethenInc: $runOnceThenIncrementState\n" +
+        s"cmd's: ${cmds map(cmd => println(cmd)}"
+    }
+
+  def print(): Unit = println(this)
 
   def distinctChars = {
     val set = new DistinctCharacterSet

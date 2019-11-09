@@ -247,9 +247,26 @@ class MapEditor(
       RpgEvent.blankInstance(id, x, y)
     else
       RpgEvent.blank(id, x, y)
+    println("X POS: "+x+" YPOS : "+y)
 
     showEditDialog(true, vs, event)
   }
+
+  /*
+  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
+    val id = vs.mapMeta.lastGeneratedEventId + 1
+    val x =
+    val y =
+
+    val event = if (eventInstance)
+      RpgEvent.blankInstance(id, x, y)
+    else
+      RpgEvent.blank(id, x, y)
+
+    showEditDialog(true, vs, event)
+  }
+ */
+
 
   def editEvent(id: Int) = viewStateOpt map { vs =>
     val event = vs.nextMapData.events(id)
@@ -271,10 +288,12 @@ class MapEditor(
     vs.begin()
 
     def onOk(e: RpgEvent) = {
+        println("C MOI LE VRAI BOUTTON YEAH")
       if (isNewEvent) {
         incrementEventId(vs)
       }
       vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
+      e.states map (rpgstate => rpgstate.print())
 
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
