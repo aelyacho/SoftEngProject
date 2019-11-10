@@ -102,14 +102,13 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   val autotileByte: Byte = -2
   val emptyTileByte: Byte = -1
 
-  def autotileSeed = Array[Byte](autotileByte, 1, 1)
+  def autotileSeed = Array[Byte](autotileByte, 0, 0)
   def emptyTileSeed = Array[Byte](emptyTileByte, 0, 0)
 
   /**
    * Generates an array made the seed bytes, repeated
    */
   def makeRowArray(nTiles: Int, seed: Array[Byte]) = {
-    println("SEED: ", seed, nTiles)
     assert(seed.length == bytesPerTile)
     val newArray = Array.tabulate[Byte](nTiles * bytesPerTile)(
       i => seed(i % bytesPerTile))
@@ -188,6 +187,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     t.getLeafs.foreach((n: Btree[Container]) =>{
       drawRect(a, 29, 1, n.value.x, n.value.y, n.value.w, n.value.h ,true)
       drawRect(a, 38, 1, n.value.room.x, n.value.room.y, n.value.room.w, n.value.room.h ,true)
+      println("ROOM", "WIDTH: " + n.value.room.w, "HEIGHT: " + n.value.room.h)
     })
 
     def fun(b :Btree[Container]){
@@ -207,22 +207,37 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
       // Make a whole row of that autotile triples
       val row = makeRowArray(xSize, autotileSeed)
       // Make multiple rows
+      Array.fill(ySize)(row.clone())
+    }
+    def emptyLayer() = {
+      val row = makeRowArray(xSize, emptyTileSeed)
+      Array.fill(ySize)(row.clone())
+    }
+
+    RpgMapData(autoLayer(), emptyLayer(), emptyLayer(), Map())
+  }
+
+  def randomMapData(xSize: Int, ySize: Int) = {
+    def autoLayer() = {
+      // Make a whole row of that autotile triples
+      val row = makeRowArray(xSize, autotileSeed)
+      // Make multiple rows
       val x = Array.fill(ySize)(row.clone())
       val tree = generateTree(xSize, ySize-1, ITER)//-1 because gives out of bounds error
 
-   /*   var i :Byte = 50
-      while(i>0){
-        var j :Byte = 50
-        while(j>0){
-          x(i)(j*3) = autotileByte
-          x(i)(j*3+1) = j
-          x(i)(j*3+2) = i
-          j = (j - 1).toByte
-        }
-        i = (i - 1).toByte
-      }
+      /*   var i :Byte = 50
+         while(i>0){
+           var j :Byte = 50
+           while(j>0){
+             x(i)(j*3) = autotileByte
+             x(i)(j*3+1) = j
+             x(i)(j*3+2) = i
+             j = (j - 1).toByte
+           }
+           i = (i - 1).toByte
+         }
 
-    */
+       */
 
       drawTree(x, tree)
       x
@@ -235,5 +250,5 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     RpgMapData(autoLayer(), emptyLayer(), emptyLayer(), Map())
   }
 
-  def defaultMapData() = emptyMapData(initXSize, initYSize)
+  def defaultMapData() = randomMapData(initXSize, initYSize)
 }
