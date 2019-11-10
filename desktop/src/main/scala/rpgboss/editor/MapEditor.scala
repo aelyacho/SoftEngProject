@@ -145,7 +145,22 @@ class MapEditor(
         "hendrik-weiler-theme/undo.png"))
   }
 
+  //<---------------- Added  ---------------->
+  val generateButton = new Button() {
+    action = new Action(""){
+      def apply() = {
+          //EFFECT OF CLICKING ON THE BUTTON
+      }
+    }
+    icon = new ImageIcon(Utils.readClasspathImage(
+      "hendrik-weiler-theme/tool.png"))
+  }
+  //<---------------------------------------->
+
+
   toolbar.contents += undoButton
+  
+  toolbar.contents += generateButton //Adding the generate button.
 
   toolbar.contents += Swing.HStrut(16)
 
