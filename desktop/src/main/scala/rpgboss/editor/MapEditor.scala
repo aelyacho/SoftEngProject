@@ -30,6 +30,7 @@ import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
+import rpgboss.model.resource.mapInfo
 
 /**
  * Panel grouping together the detailed view of the map, with its toolbar (drawing tools, layer selector)
@@ -238,8 +239,30 @@ class MapEditor(
   //--- EVENT POPUP MENU ---//
   import MapLayers._
 
-  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
-    val id = vs.mapMeta.lastGeneratedEventId + 1
+  //ADDED
+  def createEvent() = viewStateOpt map { vs =>
+    val numGen = scala.util.Random
+    val roomId = numGen.nextInt(mapInfo.totalRooms)
+    val roomHeight = mapInfo.getRoomHeight(roomId)
+    val roomWidth = mapInfo.getRoomWidth(roomId)
+
+    val eventId = vs.mapMeta.lastGeneratedEventId + 1
+    val x = mapInfo.getXCoordinate(roomId, numGen.nextInt(roomHeight))
+    val y = mapInfo.getYCoordinate(roomId, numGen.nextInt(roomWidth))
+
+    drawEvent(vs, RpgEvent.blank(eventId, x, y))
+  }
+
+  def drawEvent(vs:MapViewState, event:RpgEvent) = {
+    vs.begin()
+    incrementEventId(vs)
+    vs.nextMapData.events = vs.nextMapData.events.updated(event.id, event)
+    commitVS(vs)
+    repaintRegion(TileRect(event.x.toInt, event.y.toInt))
+  }
+
+ def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
+    /*val id = vs.mapMeta.lastGeneratedEventId + 1
     val x = canvasPanel.cursorSquare.x1 + 0.5f
     val y = canvasPanel.cursorSquare.y1 + 0.5f
 
@@ -250,22 +273,11 @@ class MapEditor(
     println("X POS: "+x+" YPOS : "+y)
 
     showEditDialog(true, vs, event)
+      RpgEvent.blank(id, x, y)*/
+  /* for(a <- 0 to 2)
+    createEvent() */
   }
-
-  /*
-  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
-    val id = vs.mapMeta.lastGeneratedEventId + 1
-    val x =
-    val y =
-
-    val event = if (eventInstance)
-      RpgEvent.blankInstance(id, x, y)
-    else
-      RpgEvent.blank(id, x, y)
-
-    showEditDialog(true, vs, event)
-  }
- */
+  
 
 
   def editEvent(id: Int) = viewStateOpt map { vs =>
@@ -284,7 +296,7 @@ class MapEditor(
     newId
   }
 
-  def showEditDialog(isNewEvent: Boolean, vs: MapViewState, event: RpgEvent) = {
+ def showEditDialog(isNewEvent: Boolean, vs: MapViewState, event: RpgEvent) = {
     vs.begin()
 
     def onOk(e: RpgEvent) = {
