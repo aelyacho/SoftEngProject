@@ -1,5 +1,4 @@
 package rpgboss.model.resource
-import Array._
 
 class Room(c: Container) {
   val r = scala.util.Random
@@ -15,6 +14,9 @@ class Room(c: Container) {
 
   w = w - r.nextInt(v1) - 1
   h = h - r.nextInt(v2) - 1
+
+  if(w==0) w+=1
+  if(h==0) h+=1
 
   var representation = Array(Array(0))
 }
