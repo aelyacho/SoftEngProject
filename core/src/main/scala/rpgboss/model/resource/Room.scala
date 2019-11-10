@@ -14,4 +14,7 @@ class Room(c: Container) {
 
   w = w - r.nextInt(v1) - 1
   h = h - r.nextInt(v2) - 1
+  
+  if(w==0) w+=1 
+  if(h==0) h+=1
 }
