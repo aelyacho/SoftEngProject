@@ -38,37 +38,14 @@ object mapInfo {
     rooms.foreach(room => {
       val roomHeight = room.h
       val roomWidth = room.w
-
-      /*
-      <--Used for debugging, ignore-->
-      if (roomHeight <= 0 || roomWidth <= 0){
-        println("FOUND A CHAMBER: (" + roomHeight + ", " + roomWidth + ")")
-      }
-       */
-
       val roomRepr = ofDim[Int](roomHeight, roomWidth)
       room.representation = roomRepr
     })
   }
 
   def getXCoordinate() = {
-    if(currentRoomId == -1) {
-      /*
-        A little bug is currently present in the implementation
-        of the map generation algorithm. To counter this bug,
-        the following solution has been thought.
-
-        Since this solution is temporarily (until the bug gets
-        fuxed), it can be ignored.
-       */
+    if(currentRoomId == -1)  //A room is randomly selected
       currentRoomId = numGen.nextInt(totalRooms)
-      var room = rooms(currentRoomId)
-      while(room.h <= 0 || room.w <= 0) {
-        //Choosing a random room
-        currentRoomId = numGen.nextInt(totalRooms)
-        room = rooms(currentRoomId)
-      }
-    }
 
     val room = rooms(currentRoomId)
     /*
@@ -86,14 +63,8 @@ object mapInfo {
 
   //Similar to getXCoordinate
   def getYCoordinate() = {
-    if(currentRoomId == -1) {
+    if(currentRoomId == -1)
       currentRoomId = numGen.nextInt(totalRooms)
-      var room = rooms(currentRoomId)
-      while(room.h <= 0 || room.w <= 0) {
-        currentRoomId = numGen.nextInt(totalRooms)
-        room = rooms(currentRoomId)
-      }
-    }
 
     val room = rooms(currentRoomId)
     currentY = numGen.nextInt(room.h)
