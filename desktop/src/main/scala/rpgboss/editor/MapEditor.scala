@@ -146,7 +146,28 @@ class MapEditor(
         "hendrik-weiler-theme/undo.png"))
   }
 
+  //<---------------- Added  ---------------->
+  /*
+    A new button has been created on the toolbar to
+    generate 50 events when clicking on it. This button
+    could in the future be used to allow the users to
+    generate the map with the events, decorations, etc...
+  */
+  val generateButton = new Button() {
+    action = new Action(""){
+      def apply() = {
+       for(a <- 0 to 50)
+          createEvent()
+      }
+    }
+    icon = new ImageIcon(Utils.readClasspathImage(
+      "hendrik-weiler-theme/tool.png"))
+  }
+  //<---------------------------------------->
+
   toolbar.contents += undoButton
+
+  toolbar.contents += generateButton //Adding the generate button.
 
   toolbar.contents += Swing.HStrut(16)
 
@@ -239,16 +260,19 @@ class MapEditor(
   //--- EVENT POPUP MENU ---//
   import MapLayers._
 
-  //ADDED
-  def createEvent() = viewStateOpt map { vs =>
-    val numGen = scala.util.Random
-    val roomId = numGen.nextInt(mapInfo.totalRooms)
-    val roomHeight = mapInfo.getRoomHeight(roomId)
-    val roomWidth = mapInfo.getRoomWidth(roomId)
+  //<---------------- Added  ---------------->
+  /*
+    The functions createEvent & drawEvent will, respectively, create an event
+    on a random position on the map and draw it.
 
+    Notice that the created events have no life in the sense that they boil down
+    to their most basic form (no sprite, no movement, etc...).
+  */
+
+  def createEvent() = viewStateOpt map { vs =>
     val eventId = vs.mapMeta.lastGeneratedEventId + 1
-    val x = mapInfo.getXCoordinate(roomId, numGen.nextInt(roomHeight))
-    val y = mapInfo.getYCoordinate(roomId, numGen.nextInt(roomWidth))
+    val x = mapInfo.getXCoordinate() + 0.5f
+    val y = mapInfo.getYCoordinate() + 0.5f
 
     drawEvent(vs, RpgEvent.blank(eventId, x, y))
   }
@@ -259,10 +283,13 @@ class MapEditor(
     vs.nextMapData.events = vs.nextMapData.events.updated(event.id, event)
     commitVS(vs)
     repaintRegion(TileRect(event.x.toInt, event.y.toInt))
+
+    mapInfo.eventAdded()
   }
+  //<---------------------------------------->
 
  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
-    /*val id = vs.mapMeta.lastGeneratedEventId + 1
+    val id = vs.mapMeta.lastGeneratedEventId + 1
     val x = canvasPanel.cursorSquare.x1 + 0.5f
     val y = canvasPanel.cursorSquare.y1 + 0.5f
 
@@ -270,15 +297,9 @@ class MapEditor(
       RpgEvent.blankInstance(id, x, y)
     else
       RpgEvent.blank(id, x, y)
-    println("X POS: "+x+" YPOS : "+y)
 
     showEditDialog(true, vs, event)
-      RpgEvent.blank(id, x, y)*/
-  /* for(a <- 0 to 2)
-    createEvent() */
   }
-  
-
 
   def editEvent(id: Int) = viewStateOpt map { vs =>
     val event = vs.nextMapData.events(id)
@@ -300,12 +321,10 @@ class MapEditor(
     vs.begin()
 
     def onOk(e: RpgEvent) = {
-        println("C MOI LE VRAI BOUTTON YEAH")
       if (isNewEvent) {
         incrementEventId(vs)
       }
       vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
-      e.states map (rpgstate => rpgstate.print())
 
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
@@ -330,7 +349,6 @@ class MapEditor(
         onOk = onOk,
         onCancel = onCancel)
     }
-
     dialog.open()
   }
 
