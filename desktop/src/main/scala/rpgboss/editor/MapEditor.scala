@@ -10,27 +10,33 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.misc._
 import rpgboss.editor.misc.GraphicsUtils._
 import com.typesafe.scalalogging.slf4j.LazyLogging
+
 import scala.math._
 import scala.swing._
 import scala.swing.event._
 import javax.imageio._
-import java.awt.{ BasicStroke, AlphaComposite, Color }
+import java.awt.{AlphaComposite, BasicStroke, Color}
 import java.awt.geom.Line2D
 import java.awt.event.MouseEvent
-import rpgboss.model.event.RpgEvent
+
+import rpgboss.model.event.{EventHeight, RpgEvent}
 import rpgboss.editor.dialog.EventDialog
 import java.awt.image.BufferedImage
+
 import scala.collection.mutable.Buffer
 import javax.swing.event._
 import javax.swing.KeyStroke
 import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
+
 import rpgboss.editor.imageset.selector.TabbedTileSelector
 import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
 import rpgboss.model.resource.mapInfo
+
+import scala.io.Source
 
 /**
  * Panel grouping together the detailed view of the map, with its toolbar (drawing tools, layer selector)
@@ -154,20 +160,40 @@ class MapEditor(
     generate the map with the events, decorations, etc...
   */
   val generateButton = new Button() {
-    action = new Action(""){
+    action = new Action("Enemies"){
       def apply() = {
-       for(a <- 0 to 50)
-          createEvent()
+       for(a <- 0 to 25)
+          createEvent(0)
+      }
+    }
+    icon = new ImageIcon(Utils.readClasspathImage(
+      "hendrik-weiler-theme/tool.png"))
+
+    /*  ------ these lines of codes generate a list with all the possible spritesets used for the events ( will be used later)
+    var spritesfile = Source.fromFile("/Users/aeya/Desktop/rpgboss-team3/core/build/resources/main/defaultrc/enumerated.txt")
+    val spriteslist = spritesfile.getLines.toList.filter(a => a.contains("sys/vx"))// && a.endsWith(".png"))
+    spritesfile.close()
+    spriteslist.map(a => println(a))
+
+     */
+  }
+
+  val npcButton = new Button() { // new button to generate npc's separately
+    action = new Action("NPC's"){
+      def apply() = {
+        for(a <- 0 to 25)
+          createEvent(1)
       }
     }
     icon = new ImageIcon(Utils.readClasspathImage(
       "hendrik-weiler-theme/tool.png"))
   }
-  //<---------------------------------------->
+
 
   toolbar.contents += undoButton
 
   toolbar.contents += generateButton //Adding the generate button.
+  toolbar.contents += npcButton // 2nd button for NPC
 
   toolbar.contents += Swing.HStrut(16)
 
@@ -269,24 +295,32 @@ class MapEditor(
     to their most basic form (no sprite, no movement, etc...).
   */
 
-  def createEvent() = viewStateOpt map { vs =>
+
+  def createEvent(evType: Int) = viewStateOpt map { vs =>
     val eventId = vs.mapMeta.lastGeneratedEventId + 1
     val x = mapInfo.getXCoordinate() + 0.5f
     val y = mapInfo.getYCoordinate() + 0.5f
+    var event: RpgEvent = null
 
-    drawEvent(vs, RpgEvent.blank(eventId, x, y))
+    evType match { // added pattern matching, createEvent will create the desired event depending on the value of evType
+      case 0 => event = RpgEvent.enemyEvent(eventId, x, y)
+      case 1 => event = RpgEvent.npcEvent(eventId, x, y)
+      case _ => throw new Exception("Invalid Event Type")
+    }
+
+    drawEvent(vs, event)
   }
 
   def drawEvent(vs:MapViewState, event:RpgEvent) = {
-    vs.begin()
-    incrementEventId(vs)
-    vs.nextMapData.events = vs.nextMapData.events.updated(event.id, event)
-    commitVS(vs)
-    repaintRegion(TileRect(event.x.toInt, event.y.toInt))
+      vs.begin()
+      incrementEventId(vs)
+      vs.nextMapData.events = vs.nextMapData.events.updated(event.id, event)
+      commitVS(vs)
+      repaintRegion(TileRect(event.x.toInt, event.y.toInt))
 
     mapInfo.eventAdded()
   }
-  //<---------------------------------------->
+//<--------------------------------------------->
 
  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
     val id = vs.mapMeta.lastGeneratedEventId + 1
@@ -325,6 +359,7 @@ class MapEditor(
         incrementEventId(vs)
       }
       vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
+      e.states map(a => println(a))
 
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
