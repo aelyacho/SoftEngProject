@@ -301,8 +301,8 @@ class MapEditor(
     val x = mapInfo.getXCoordinate() + 0.5f
     val y = mapInfo.getYCoordinate() + 0.5f
     var event: RpgEvent = null
-
-    evType match { // added pattern matching, createEvent will create the desired event depending on the value of evType
+  /** added pattern matching, createEvent will create the desired event depending on the value of evType */
+    evType match { 
       case 0 => event = RpgEvent.enemyEvent(eventId, x, y)
       case 1 => event = RpgEvent.npcEvent(eventId, x, y)
       case _ => throw new Exception("Invalid Event Type")
