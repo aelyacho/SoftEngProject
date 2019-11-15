@@ -152,14 +152,7 @@ class MapEditor(
         "hendrik-weiler-theme/undo.png"))
   }
 
-  //<---------------- Added  ---------------->
-  /*
-    A new button has been created on the toolbar to
-    generate 50 events when clicking on it. This button
-    could in the future be used to allow the users to
-    generate the map with the events, decorations, etc...
-  */
-  val generateButton = new Button() {
+  val enemyButton = new Button() {
     action = new Action("Enemies"){
       def apply() = {
        for(a <- 0 to 25)
@@ -192,7 +185,7 @@ class MapEditor(
 
   toolbar.contents += undoButton
 
-  toolbar.contents += generateButton //Adding the generate button.
+  toolbar.contents += enemyButton //Adding the generate button.
   toolbar.contents += npcButton // 2nd button for NPC
 
   toolbar.contents += Swing.HStrut(16)
@@ -286,16 +279,10 @@ class MapEditor(
   //--- EVENT POPUP MENU ---//
   import MapLayers._
 
-  //<---------------- Added  ---------------->
-  /*
-    The functions createEvent & drawEvent will, respectively, create an event
-    on a random position on the map and draw it.
-
-    Notice that the created events have no life in the sense that they boil down
-    to their most basic form (no sprite, no movement, etc...).
-  */
-
-
+  /** Creates an event of a certain type (NPC or enemies)
+   *
+   *  @param evType represents the type of the event
+   */
   def createEvent(evType: Int) = viewStateOpt map { vs =>
     val eventId = vs.mapMeta.lastGeneratedEventId + 1
     val x = mapInfo.getXCoordinate() + 0.5f
@@ -311,6 +298,11 @@ class MapEditor(
     drawEvent(vs, event)
   }
 
+  /** Draws the events on the map
+   *
+   * @param vs the view state of the map
+   * @param event the rpgEvent that has to be drawn on the map
+   * */
   def drawEvent(vs:MapViewState, event:RpgEvent) = {
       vs.begin()
       incrementEventId(vs)
@@ -320,7 +312,6 @@ class MapEditor(
 
     mapInfo.eventAdded()
   }
-//<--------------------------------------------->
 
  def newEvent(eventInstance: Boolean) = viewStateOpt map { vs =>
     val id = vs.mapMeta.lastGeneratedEventId + 1
@@ -370,6 +361,7 @@ class MapEditor(
 
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
+      mapInfo.eventAdded(e.x.toInt, e.y.toInt)
     }
 
     def onCancel(e: RpgEvent) =
@@ -397,6 +389,7 @@ class MapEditor(
   def deleteEvent() = viewStateOpt map { vs =>
     selectedEvtId map { id =>
       vs.begin()
+      val event = vs.nextMapData.events(id)
       vs.nextMapData.events = vs.nextMapData.events - id
       commitVS(vs)
 
@@ -404,6 +397,7 @@ class MapEditor(
       repaintRegion(canvasPanel.cursorSquare)
       // Delete the cached selected event id
       selectedEvtId = None
+      mapInfo.elementDeleted(event.x.toInt, event.y.toInt)
     }
   }
 
