@@ -95,7 +95,11 @@ case class IntParameter(
     var localVariable: String = "",
     override var globalVariable: String = "") extends EventParameter[Int] {
   override def supportsGlobalVariable = true
-
+/*
+  override def toString: String = {
+    s"Constant: $constant, ValueTypeId: $valueTypeId, LocalVariable: $localVariable, GlobalVariable: $globalVariable\n"
+  }
+*/
   override def rawJs =  EventParameterValueType(valueTypeId) match {
     case EventParameterValueType.GlobalVariable =>
       EventJavascript.jsCall("game.getInt", globalVariable)

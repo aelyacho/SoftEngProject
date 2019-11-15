@@ -47,7 +47,16 @@ case class RpgEvent(
   var states: Array[RpgEventState] = Array(RpgEventState()),
   var eventClassId: Int = -1,
   var params: Array[EventParameter[_]] = Array()) {
+
   def isInstance = eventClassId >= 0
+  override def toString() : String = {
+  s"id: $id - "+
+    s"name: $name - " +
+    s"x: $x, y: $y - " +
+    s"states: ${states.map(s => s.print())} - " +
+    s"eventClassId: $eventClassId - " +
+    s"params: $params "
+  }
 }
 
 object RpgEvent {
@@ -88,8 +97,9 @@ object RpgEvent {
 
     state.sprite = Some(SpriteSpec(getSpriteSet(),getRandomVal(8),getRandomVal(3),getRandomVal(4)))
     state.height = getRandomVal(3)
-    state.trigger = getRandomVal(6)
+    state.trigger = 1 //getRandomVal(6)
     state.animationType = randomAnimation(evType)
+    state.cmds = Array(StartBattle(IntParameter(getRandomVal(6))))
 
     Array(state)
   }
@@ -132,13 +142,13 @@ case class RpgEventState(
   var cmds: Array[EventCmd] = Array()) {
   override def toString() : String = {
     "------------------------ RPG EVENT STATE VARIABLES------------------------\n"+
-      s"Conditions: ${conditions map(cond => println(cond))} \n " +
-      s"Sprite: $sprite\n" +
-        s"Height: $height\n" +
-      s"affix dir: $affixDirection\n" +
-      s"trigger: $trigger\n" +
-      s"animationType: $animationType\n" +
-      s"runOncethenInc: $runOnceThenIncrementState\n" +
+      s"Conditions: ${conditions map(cond => println(cond))}, " +
+      s"Sprite: $sprite, " +
+        s"Height: $height, " +
+      s"affix dir: $affixDirection, " +
+      s"trigger: $trigger, " +
+      s"animationType: $animationType, " +
+      s"runOncethenInc: $runOnceThenIncrementState, " +
         s"cmd's: ${cmds map(cmd => println(cmd))}"
     }
 
