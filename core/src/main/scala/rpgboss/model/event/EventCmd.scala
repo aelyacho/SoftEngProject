@@ -505,6 +505,9 @@ case class OpenStore(
   itemIdsSold: IntArrayParameter = IntArrayParameter(),
   buyPriceMultiplier: FloatParameter = FloatParameter(1.0f),
   sellPriceMultiplier: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
+  override def toString: String = {
+    s"OpenStore: slot: $itemIdsSold, BuyPriceMultiplied: $buyPriceMultiplier, sellPriceMultiplied: $sellPriceMultiplier\n "
+  }
   def sections = singleCall("game.openStore", itemIdsSold, buyPriceMultiplier,
     sellPriceMultiplier)
 

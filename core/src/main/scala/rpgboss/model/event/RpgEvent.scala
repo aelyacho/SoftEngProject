@@ -68,7 +68,7 @@ object RpgEvent {
    *  @param evType the chosen event (enemy or npc atm)
    *  @return a random animationtype id that will be used in getRandomState
    */
-  private def randomAnimation(evType: Int): Int = {
+  private def getRandomAnimation(evType: Int): Int = {
     val enemyAnimation = List(AnimationType.FOLLOW_PLAYER.id, AnimationType.RANDOM_MOVEMENT.id)
     val npcAnimation = List(AnimationType.NONE.id, AnimationType.RANDOM_MOVEMENT.id)
     evType match {
@@ -93,14 +93,22 @@ object RpgEvent {
       } else throw new Exception("Invalid Event Type")
     }
 
-    val state = RpgEventState()
+    /** get a random action depending of the value of evType  */
+    def getRandomActions(): Array[EventCmd] = {
+      val storeItems = getRandomVal(32)
+      def startRange: Int = if ((storeItems-12)>=0) storeItems-12 else 0
+      evType match {
+        case 0 => Array(StartBattle(IntParameter(getRandomVal(6))))
+        case 1 => Array(OpenStore(IntArrayParameter(Array.range(startRange, storeItems))))
+        case _ => throw new Exception("Invalid Event Type")
+      }
+    }
 
+    val state = RpgEventState()
     state.sprite = Some(SpriteSpec(getSpriteSet(),getRandomVal(8),getRandomVal(3),getRandomVal(4)))
     state.height = getRandomVal(3)
-    state.trigger = 1 //getRandomVal(6)
-    state.animationType = randomAnimation(evType)
-    state.cmds = Array(StartBattle(IntParameter(getRandomVal(6))))
-
+    state.animationType = getRandomAnimation(evType)
+    state.cmds = getRandomActions()
     Array(state)
   }
 

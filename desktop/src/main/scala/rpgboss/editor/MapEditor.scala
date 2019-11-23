@@ -289,7 +289,8 @@ class MapEditor(
     val y = mapInfo.getYCoordinate() + 0.5f
     var event: RpgEvent = null
   /** added pattern matching, createEvent will create the desired event depending on the value of evType */
-    evType match { 
+    evType match {
+      /** @DanielB you can add the treasure chest and teleporter calls here  */
       case 0 => event = RpgEvent.enemyEvent(eventId, x, y)
       case 1 => event = RpgEvent.npcEvent(eventId, x, y)
       case _ => throw new Exception("Invalid Event Type")

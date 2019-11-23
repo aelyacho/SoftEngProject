@@ -87,7 +87,11 @@ case class FloatParameter(
 case class IntArrayParameter(
     var constant: Array[Int] = Array(),
     var valueTypeId: Int = EventParameterValueType.Constant.id,
-    var localVariable: String = "") extends EventParameter[Array[Int]]
+    var localVariable: String = "") extends EventParameter[Array[Int]] {
+  override def toString: String = {
+    s"IntArrayParameter: Constant: ${constant.map(a => print(a+" "))}, valueTypeId: $valueTypeId, localVariable: $localVariable "
+  }
+}
 
 case class IntParameter(
     var constant: Int = 0,
@@ -95,11 +99,6 @@ case class IntParameter(
     var localVariable: String = "",
     override var globalVariable: String = "") extends EventParameter[Int] {
   override def supportsGlobalVariable = true
-/*
-  override def toString: String = {
-    s"Constant: $constant, ValueTypeId: $valueTypeId, LocalVariable: $localVariable, GlobalVariable: $globalVariable\n"
-  }
-*/
   override def rawJs =  EventParameterValueType(valueTypeId) match {
     case EventParameterValueType.GlobalVariable =>
       EventJavascript.jsCall("game.getInt", globalVariable)
