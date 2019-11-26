@@ -10,6 +10,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.misc._
 import rpgboss.editor.misc.GraphicsUtils._
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import rpgboss.model.event.{EnemyCreator, EventHeight, NPCCreator, RpgEvent, RpgEventCreator, TreasureChestCreator}
 
 import scala.math._
 import scala.swing._
@@ -19,7 +20,6 @@ import java.awt.{AlphaComposite, BasicStroke, Color}
 import java.awt.geom.Line2D
 import java.awt.event.MouseEvent
 
-import rpgboss.model.event.{EventHeight, RpgEvent}
 import rpgboss.editor.dialog.EventDialog
 import java.awt.image.BufferedImage
 
@@ -153,10 +153,18 @@ class MapEditor(
   }
 
   val enemyButton = new Button() {
-    action = new Action("Enemies"){
+    action = new Action("Enemies") {
       def apply() = {
-       for(a <- 0 to 25)
-          createEvent(0)
+        val enemyCreator = new EnemyCreator
+        for (a <- 0 to 25) {
+          val metaData = generateEventData().get
+          val vs = metaData(0).asInstanceOf[MapViewState]
+          val id = metaData(1).asInstanceOf[Int]
+          val x = metaData(2).asInstanceOf[Float]
+          val y = metaData(3).asInstanceOf[Float]
+          val enemyEvent = enemyCreator.createEvent(id, x, y)
+          drawEvent(vs, enemyEvent)
+        }
       }
     }
     icon = new ImageIcon(Utils.readClasspathImage(
@@ -174,19 +182,46 @@ class MapEditor(
   val npcButton = new Button() { // new button to generate npc's separately
     action = new Action("NPC's"){
       def apply() = {
-        for(a <- 0 to 25)
-          createEvent(1)
+        val npcCreator = new NPCCreator
+        for(a <- 0 to 25) {
+          val metaData = generateEventData().get
+          val vs = metaData(0).asInstanceOf[MapViewState]
+          val id = metaData(1).asInstanceOf[Int]
+          val x = metaData(2).asInstanceOf[Float]
+          val y = metaData(3).asInstanceOf[Float]
+          val npcEvent = npcCreator.createEvent(id, x, y)
+          drawEvent(vs, npcEvent)
+        }
       }
     }
     icon = new ImageIcon(Utils.readClasspathImage(
       "hendrik-weiler-theme/tool.png"))
   }
 
+  val chestButton = new Button() { // new button to generate npc's separately
+    action = new Action("Chests"){
+      def apply() = {
+        val chestCreator = new TreasureChestCreator
+        for(a <- 0 to 25) {
+          val metaData = generateEventData().get
+          val vs = metaData(0).asInstanceOf[MapViewState]
+          val id = metaData(1).asInstanceOf[Int]
+          val x = metaData(2).asInstanceOf[Float]
+          val y = metaData(3).asInstanceOf[Float]
+          val npcEvent = chestCreator.createEvent(id, x, y)
+          drawEvent(vs, npcEvent)
+        }
+      }
+    }
+    icon = new ImageIcon(Utils.readClasspathImage(
+      "hendrik-weiler-theme/tool.png"))
+  }
 
   toolbar.contents += undoButton
 
   toolbar.contents += enemyButton //Adding the generate button.
   toolbar.contents += npcButton // 2nd button for NPC
+  toolbar.contents += chestButton
 
   toolbar.contents += Swing.HStrut(16)
 
@@ -279,10 +314,18 @@ class MapEditor(
   //--- EVENT POPUP MENU ---//
   import MapLayers._
 
+  def generateEventData() = viewStateOpt map { vs =>
+    val eventId = vs.mapMeta.lastGeneratedEventId + 1
+    val x = mapInfo.getXCoordinate() + 0.5f
+    val y = mapInfo.getYCoordinate() + 0.5f
+    Array(vs, eventId, x, y)
+  }
+/*
   /** Creates an event of a certain type (NPC or enemies)
    *
    *  @param evType represents the type of the event
    */
+
   def createEvent(evType: Int) = viewStateOpt map { vs =>
     val eventId = vs.mapMeta.lastGeneratedEventId + 1
     val x = mapInfo.getXCoordinate() + 0.5f
@@ -297,7 +340,9 @@ class MapEditor(
     }
 
     drawEvent(vs, event)
-  }
+  }   */
+
+
 
   /** Draws the events on the map
    *
