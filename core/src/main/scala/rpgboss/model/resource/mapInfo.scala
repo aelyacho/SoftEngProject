@@ -68,11 +68,11 @@ object mapInfo {
       breakable {
         val room = rooms(roomId)
         val roomX = room.x
-        val roomXLim = roomX + room.h
+        val roomXLim = roomX + room.w
         val roomY = room.y
         val roomYLim = roomY + room.h
 
-        if ((roomX <= x) && (x <= roomXLim) && ((roomY <= y) && (y <= roomYLim))) {
+        if (((roomX <= x) && (x <= roomXLim)) && ((roomY <= y) && (y <= roomYLim))) {
           currentRoomId = roomId
           convert()
           break
