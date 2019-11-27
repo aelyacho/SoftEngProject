@@ -162,4 +162,6 @@ object mapInfo {
   def eventAdded(x:Int = currentX, y:Int = currentY) = addElement(x, y, mapElement.EVENT)
   /** Used to signal that a decoration has been added */
   def decorationAdded(x:Int = currentX, y:Int = currentY) = addElement(x, y, mapElement.DECORATION)
+
+  def forgetCoordinate() = currentRoomId = -1
 }

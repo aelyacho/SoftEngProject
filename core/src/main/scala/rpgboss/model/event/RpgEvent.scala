@@ -39,6 +39,7 @@ object EventHeight extends RpgEnum {
  *                          class this is an instance of.
  * @param   params          Variables to bind for the event class.
  */
+
 case class RpgEvent(
   id: Int = 0,
   var name: String = "",
@@ -50,16 +51,17 @@ case class RpgEvent(
 
   def isInstance = eventClassId >= 0
   override def toString() : String = {
-  s"id: $id - "+
-    s"name: $name - " +
-    s"x: $x, y: $y - " +
-    s"states: ${states.map(s => s.print())} - " +
-    s"eventClassId: $eventClassId - " +
-    s"params: $params "
+    s"id: $id - "+
+      s"name: $name - " +
+      s"x: $x, y: $y - " +
+      s"states: ${states.map(s => s.print())} - " +
+      s"eventClassId: $eventClassId - " +
+      s"params: $params "
   }
 }
 
 object RpgEvent {
+  /*
   /** generate a random value between 0 and x */
   private def getRandomVal(x: Int): Int = scala.util.Random.nextInt(x)
 
@@ -110,7 +112,7 @@ object RpgEvent {
     state.animationType = getRandomAnimation(evType)
     state.cmds = getRandomActions()
     Array(state)
-  }
+  }*/
 
   def blank(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
@@ -119,14 +121,15 @@ object RpgEvent {
   def blankInstance(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y,
              Array.empty, 0)
-
-  /** Create an Enemy Event (event type = 0) */
+/*  /** Create an Enemy Event (event type = 0) */
   def enemyEvent(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y, getRandomState(0))
 
   /** Create a NPC Event (event type = 1) */
   def npcEvent(idFromMap: Int, x: Float, y: Float) =
     RpgEvent(idFromMap, "Event%05d".format(idFromMap), x, y, getRandomState(1))
+
+ */
 }
 
 
