@@ -26,11 +26,11 @@ object mapInfo {
 
   private val numGen = scala.util.Random
   /**Contains the index of the room where the x- and y-coordinates will be chosen from*/
-  private var currentRoomId = -1
+  private var currentRoomIdx = -1
   /**X-coordinate in the chosen room*/
-  private var currentX = 0
+  private var currentX = -1
   /**Y-coordinate in the chosen room*/
-  private var currentY = 0
+  private var currentY = -1
 
   /**Defining the semantic of the values found in the representations of the rooms*/
   object mapElement extends Enumeration {
@@ -50,7 +50,7 @@ object mapInfo {
    * The index of the room, and the resized coordinates, will be held in the variables currentRoomId,
    * currentX and currentY
    */
-  private def findRoom(x:Int, y:Int) = {
+  private def findRoom(x:Int, y:Int): Unit = {
     import util.control.Breaks._
     /**Converts the x- and y-coordinates in coordinates that can be used in a 2D-array
      *
@@ -58,8 +58,8 @@ object mapInfo {
      * they first need to be resized to fit the dimension of the corresponding 2D-array. This can be easily
      * achieved by substracting from the coordinates the x/y-coordinate of the room.
      */
-    def convert() = {
-      val room = rooms(currentRoomId)
+    def convert(): Unit = {
+      val room = rooms(currentRoomIdx)
       currentX = x - room.x
       currentY = y - room.y
     }
@@ -73,7 +73,7 @@ object mapInfo {
         val roomYLim = roomY + room.h
 
         if (((roomX <= x) && (x <= roomXLim)) && ((roomY <= y) && (y <= roomYLim))) {
-          currentRoomId = roomId
+          currentRoomIdx = roomId
           convert()
           break
         }
@@ -89,21 +89,21 @@ object mapInfo {
    *
    * The procedure is pretty basic.
    */
-  private def addElement(x:Int, y:Int , element:Int) = {
+  private def addElement(x:Int, y:Int , element:Int): Unit = {
     if(x != currentX && y != currentY)
       findRoom(x, y)
 
-    val roomRepr = rooms(currentRoomId).representation
+    val roomRepr = rooms(currentRoomIdx).representation
     roomRepr(currentY)(currentX) = element
     /** After modifying the 2D-array of a room, currentRoomId is invalidated */
-    currentRoomId = -1
+    forgetCoordinates()
   }
 
   /**Creates the representation of the rooms
    *
    * @param tree Tree containing the rooms
    */
-  def createRepr(tree:Btree[Container]) = {
+  def createRepr(tree:Btree[Container]): Unit = {
     val roomList = tree.getLeafs.map(node => node.value.room)
     totalRooms = roomList.length
     rooms = new Array[Room](totalRooms)
@@ -120,12 +120,12 @@ object mapInfo {
    *
    * @return a x-coordinate as an integer
    */
-  def getXCoordinate() = {
+  def getXCoordinate(): Int = {
     /** Check of a random has already been chosen */
-    if(currentRoomId == -1)
-      currentRoomId = numGen.nextInt(totalRooms)
+    if(currentRoomIdx == -1)
+      currentRoomIdx = numGen.nextInt(totalRooms)
 
-    val room = rooms(currentRoomId)
+    val room = rooms(currentRoomIdx)
     /** Choosing a random x inside the room */
     currentX = numGen.nextInt(room.w)
     val roomX = room.x
@@ -133,11 +133,11 @@ object mapInfo {
   }
 
   /** Similar to getXCoordiante*/
-  def getYCoordinate() = {
-    if(currentRoomId == -1)
-      currentRoomId = numGen.nextInt(totalRooms)
+  def getYCoordinate(): Int = {
+    if(currentRoomIdx == -1)
+      currentRoomIdx = numGen.nextInt(totalRooms)
 
-    val room = rooms(currentRoomId)
+    val room = rooms(currentRoomIdx)
     currentY = numGen.nextInt(room.h)
     val roomY = room.y
     roomY +  currentY
@@ -150,18 +150,20 @@ object mapInfo {
    */
   def elementDeleted(x:Int, y:Int): Unit ={
     findRoom(x, y)
-    val room = rooms(currentRoomId)
+    val room = rooms(currentRoomIdx)
     val roomRepr = room.representation
     roomRepr(currentY)(currentX) = mapElement.FREE
-    currentRoomId = -1
-    currentX = -1
-    currentY = -1
+    forgetCoordinates()
   }
 
   /** Used to signal that an event has been added */
-  def eventAdded(x:Int = currentX, y:Int = currentY) = addElement(x, y, mapElement.EVENT)
+  def eventAdded(x:Int = currentX, y:Int = currentY): Unit = addElement(x, y, mapElement.EVENT)
   /** Used to signal that a decoration has been added */
-  def decorationAdded(x:Int = currentX, y:Int = currentY) = addElement(x, y, mapElement.DECORATION)
+  def decorationAdded(x:Int = currentX, y:Int = currentY): Unit = addElement(x, y, mapElement.DECORATION)
 
-  def forgetCoordinate() = currentRoomId = -1
+  def forgetCoordinates(): Unit = {
+    currentRoomIdx = -1
+    currentX = -1
+    currentY = -1
+  }
 }

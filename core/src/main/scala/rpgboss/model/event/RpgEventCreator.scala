@@ -1,7 +1,6 @@
 package rpgboss.model.event
 
-import rpgboss.model.{SpriteSpec}
-import rpgboss.model.MapLoc
+import rpgboss.model.{SpriteSpec, MapLoc}
 import rpgboss.model.resource.mapInfo
 
 /** generate a random value between 0 and x */
@@ -10,7 +9,7 @@ object Randomizer {
 }
 
 abstract class RpgEventCreator(protected var currentEventId:Int) {
-  def createEvent : Array[RpgEvent]
+  def createEvent() : Array[RpgEvent]
 }
 
 class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
@@ -18,7 +17,7 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
   private val storeItems = Randomizer.getRandomVal(32)
   private def startRange: Int = if ((storeItems-12)>=0) storeItems-12 else 0
 
-  def createEvent() = {
+  def createEvent(): Array[RpgEvent] = {
     val state = RpgEventState()
     val x = mapInfo.getXCoordinate() + 0.5f
     val y = mapInfo.getYCoordinate() + 0.5f
@@ -35,7 +34,7 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
 class EnemyCreator(eventId:Int) extends RpgEventCreator(eventId) {
   private val enemyAnimation = List(AnimationType.FOLLOW_PLAYER.id, AnimationType.RANDOM_MOVEMENT.id)
 
-  def createEvent() = {
+  def createEvent(): Array[RpgEvent] = {
     val state = RpgEventState()
     val x = mapInfo.getXCoordinate() + 0.5f
     val y = mapInfo.getYCoordinate() + 0.5f
@@ -50,7 +49,7 @@ class EnemyCreator(eventId:Int) extends RpgEventCreator(eventId) {
 }
 
 class TreasureChestCreator(eventId:Int) extends RpgEventCreator(eventId) {
-  def createEvent() = {
+  def createEvent(): Array[RpgEvent] = {
     val amountOfGold = Randomizer.getRandomVal(300+1)
 
     val closedState = RpgEventState()
@@ -73,12 +72,13 @@ class TreasureChestCreator(eventId:Int) extends RpgEventCreator(eventId) {
 class TeleporterCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
   def createEvent() = Array(RpgEvent())
 
-  def createEvent(distance: Int, mapName:String) = {
+  def createEvent(distance: Int, mapName:String): Array[RpgEvent] = {
     val teleporter1 = RpgEventState()
     val x1 = mapInfo.getXCoordinate() + 0.5f
     val y1 = mapInfo.getYCoordinate() + 0.5f
     val newId1:Int = (() => {currentEventId += 1; currentEventId})()
     val newUserY1 = y1 + 1f
+    mapInfo.forgetCoordinates()
 
     val teleporter2 = RpgEventState()
     var x2 = mapInfo.getXCoordinate() + 0.5f
@@ -87,7 +87,7 @@ class TeleporterCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     var newUserY2 = y2 + 1f
 
     while(Math.abs(x1 - x2) < distance || Math.abs(y1 - y2) < distance) {
-      mapInfo.forgetCoordinate()
+      mapInfo.forgetCoordinates()
       x2 = mapInfo.getXCoordinate() + 0.5f
       y2 = mapInfo.getYCoordinate() + 0.5f
       newUserY2 = y2 + 1f
