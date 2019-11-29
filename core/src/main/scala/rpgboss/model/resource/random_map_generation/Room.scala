@@ -1,5 +1,4 @@
-package rpgboss.model.resource
-
+package rpgboss.model.resource.random_map_generation
 
 class Room(c: Container) {
   val r = scala.util.Random

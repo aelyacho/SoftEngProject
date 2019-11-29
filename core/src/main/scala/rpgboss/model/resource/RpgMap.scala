@@ -8,6 +8,9 @@ import scala.collection.JavaConversions._
 import java.io._
 import java.util.Arrays
 import org.json4s.DefaultFormats
+import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode, Node}
+import rpgboss.model.resource.random_map_generation.{Container}
+
 import scala.collection.mutable.ArrayBuffer
 
 case class RpgMapMetadata(var parent: String,
@@ -19,6 +22,8 @@ case class RpgMapMetadata(var parent: String,
                           var autotiles: Array[String] =
                             ResourceConstants.defaultAutotiles,
                           var interior:Boolean = false,
+                          var random:Boolean = false,//Boolean used to start the random map generation process
+                          var iter:Int = 3,//Amount of iterations for the random map generation algorithm
                           var music: Option[SoundSpec] = None,
                           var battleBackground: String =
                             ResourceConstants.defaultBattleback,
@@ -95,7 +100,6 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
 
   val initXSize = 80
   val initYSize = 60
-  val ITER = 5
 
   val bytesPerTile = 3
 
@@ -158,10 +162,10 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
 
   def drawRect(a: Array[Array[Byte]], xTile :Byte, yTile :Byte, x: Int, y: Int, w: Int, h: Int, fill :Boolean): Unit ={
     if(fill){
-      var ctr = h
-      while(ctr>=0){
+      var ctr = 0
+      while(ctr<h){
         drawLine(a, xTile, yTile, x, y+ctr, x+w, y+ctr, 1)
-        ctr = ctr - 1
+        ctr = ctr + 1
       }
     }
     else {
@@ -187,7 +191,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     t.getLeafs.foreach((n: Btree[Container]) =>{
       drawRect(a, 29, 1, n.value.x, n.value.y, n.value.w, n.value.h ,true)
       drawRect(a, 38, 1, n.value.room.x, n.value.room.y, n.value.room.w, n.value.room.h ,true)
-      println("ROOM", "WIDTH: " + n.value.room.w, "HEIGHT: " + n.value.room.h)
+      //println("ROOM", "WIDTH: " + n.value.room.w, "HEIGHT: " + n.value.room.h)
     })
 
     def fun(b :Btree[Container]){
@@ -217,28 +221,13 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     RpgMapData(autoLayer(), emptyLayer(), emptyLayer(), Map())
   }
 
-  def randomMapData(xSize: Int, ySize: Int) = {
+  def randomMapData(xSize: Int, ySize: Int, iter:Int) = {
     def autoLayer() = {
       // Make a whole row of that autotile triples
       val row = makeRowArray(xSize, autotileSeed)
       // Make multiple rows
       val x = Array.fill(ySize)(row.clone())
-      val tree = generateTree(xSize, ySize-1, ITER)//-1 because gives out of bounds error
-
-      /*   var i :Byte = 50
-         while(i>0){
-           var j :Byte = 50
-           while(j>0){
-             x(i)(j*3) = autotileByte
-             x(i)(j*3+1) = j
-             x(i)(j*3+2) = i
-             j = (j - 1).toByte
-           }
-           i = (i - 1).toByte
-         }
-
-       */
-
+      val tree = generateTree(xSize, ySize, iter)
       drawTree(x, tree)
       x
     }
@@ -250,5 +239,5 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     RpgMapData(autoLayer(), emptyLayer(), emptyLayer(), Map())
   }
 
-  def defaultMapData() = randomMapData(initXSize, initYSize)
+  def defaultMapData() = emptyMapData(initXSize, initYSize)
 }

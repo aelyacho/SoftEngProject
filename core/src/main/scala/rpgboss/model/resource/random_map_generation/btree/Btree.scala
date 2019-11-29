@@ -1,11 +1,11 @@
-package rpgboss.model.resource
+package rpgboss.model.resource.random_map_generation.btree
 
 abstract class Btree[+T] {
   def value : T
   def left : Btree[T]
   def right : Btree[T]
 
-  def foreach(f :(Btree[T])=>Any): Unit ={
+  def foreach(f :Btree[T]=>Any): Unit ={
     if (this != EmptyNode){
       f(this)
       this.left.foreach(f)

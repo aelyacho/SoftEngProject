@@ -1,4 +1,4 @@
-package rpgboss.model.resource
+package rpgboss.model.resource.random_map_generation
 
 case class Container (var x : Int,
                       var y : Int,

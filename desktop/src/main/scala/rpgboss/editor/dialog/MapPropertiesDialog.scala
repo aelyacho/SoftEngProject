@@ -31,11 +31,15 @@ class MapPropertiesDialog(
     val newMap = initialMap.copy(metadata = model)
 
     val newMapData = {
-      if (model.xSize == initialMap.metadata.xSize &&
-        model.ySize == initialMap.metadata.ySize) {
-        initialMapData
-      } else {
-        initialMapData.resized(model.xSize, model.ySize)
+      if(model.random){//Added for random map generation (if random boolean is true, get random map data instead of the default data)
+        RpgMap.randomMapData(model.xSize, model.ySize, model.iter)
+      }else {
+        if (model.xSize == initialMap.metadata.xSize &&
+          model.ySize == initialMap.metadata.ySize) {
+          initialMapData
+        } else {
+          initialMapData.resized(model.xSize, model.ySize)
+        }
       }
     }
 
@@ -77,6 +81,20 @@ class MapPropertiesDialog(
   val fRandomEncounters = new RandomEncounterSettingsPanel(
       owner, sm.getProjData, model.randomEncounterSettings)
 
+  val random = boolField(//Checkbox for activating random map generation
+    getMessage("Random Map Generation"),
+    model.random,
+    (bool:Boolean)=>{
+      iter.enabled_=(bool)
+      model.random = bool
+    }) //Added option in user interface for random map generation
+
+  val iter = new NumberSpinner( //Added adjustable iter for Random map generation
+      1, 6,       //Constraints on the iter still needs to be added
+      model.iter,
+      model.iter = _)
+  iter.enabled_=(model.random)
+
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
       contents += new DesignGridPanel {
@@ -104,7 +122,13 @@ class MapPropertiesDialog(
         row().grid(leftLabel(getMessageColon("Tilesets"))).add(fTilesets)
       }
 
+      contents += new DesignGridPanel {// Grid panel for the UI of random map generation
+        row().grid().add(random)
+        row().grid(lbl(getMessage("Iter") + ":")).add(iter)
+      }
+
       contents += fRandomEncounters
+
     }
 
     contents += new DesignGridPanel {

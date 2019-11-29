@@ -1,4 +1,4 @@
-package rpgboss.model.resource
+package rpgboss.model.resource.random_map_generation.btree
 
 object EmptyNode extends Btree[Nothing] {
   def value : Nothing = throw new Exception("Cannot get the value of empty node")
