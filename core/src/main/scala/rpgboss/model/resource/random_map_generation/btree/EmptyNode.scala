@@ -5,5 +5,5 @@ object EmptyNode extends Btree[Nothing] {
   def left : Nothing = throw new Exception("Cannot get the left of empty node")
   def right : Nothing = throw new Exception("Cannot get the right of empty node")
 
-  override def toString = "()"
+  override def toString = "Empty node"
 }
