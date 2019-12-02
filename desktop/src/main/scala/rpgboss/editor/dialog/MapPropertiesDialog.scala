@@ -13,6 +13,7 @@ import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.resourceselector.BattleBackgroundField
 import rpgboss.editor.uibase.SwingUtils.boolField
+import scala.math._
 
 class MapPropertiesDialog(
   owner: Window,
@@ -88,9 +89,11 @@ class MapPropertiesDialog(
       iter.enabled_=(bool)
       model.random = bool
     }) //Added option in user interface for random map generation
+    
+  val maxIter = round(log(fHeight*fWidth/150)/log(2))
 
   val iter = new NumberSpinner( //Added adjustable iter for Random map generation
-      1, 6,       //Constraints on the iter still needs to be added
+      1, maxIter,
       model.iter,
       model.iter = _)
   iter.enabled_=(model.random)
