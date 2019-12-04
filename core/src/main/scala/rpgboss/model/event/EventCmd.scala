@@ -886,6 +886,10 @@ case class ShowText(
   var customFace: Option[FaceSpec] = None,
   var useCharacterFace: Boolean = false,
   var characterId: Int = 0) extends EventCmd {
+
+  override def toString: String = {
+    s"SHOWTEXT: lines: ${lines.map(x => print(x + " "))}, customFace: $customFace, useCharFace: $useCharacterFace, charID: $characterId\n "
+  }
   def processedLines = lines.map { l =>
     // The local variables need to be processed here rather than in the
     // WindowText class, because only the Javascript has access to the local

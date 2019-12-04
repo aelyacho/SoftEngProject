@@ -1,5 +1,4 @@
 package rpgboss.model.resource
-import Array._
 
 /** Contains the representation of the rooms (2D-arrays) and methods to interact with these
   *
@@ -18,7 +17,7 @@ import Array._
   *                                 Their job is to modify the 2D-vector of the corresponding room to denote the presence of these elements.
   *
   */
-object mapInfo {
+object MapInfo {
   /** Amount of rooms on the map*/
   var totalRooms = 0
   /** Array containing all the rooms*/
@@ -111,7 +110,7 @@ object mapInfo {
     rooms.foreach(room => {
       val roomHeight = room.h
       val roomWidth = room.w
-      val roomRepr = ofDim[Int](roomHeight, roomWidth)
+      val roomRepr = Array.ofDim[Int](roomHeight, roomWidth)
       room.representation = roomRepr
     })
   }

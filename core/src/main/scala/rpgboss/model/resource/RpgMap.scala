@@ -182,7 +182,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
       }
     }
     val tree = splitContainer(Container(0, 0, width, height), iter)
-    mapInfo.createRepr(tree)
+    MapInfo.createRepr(tree)
     tree
   }
 
