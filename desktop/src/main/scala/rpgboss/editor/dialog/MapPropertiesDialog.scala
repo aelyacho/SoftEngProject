@@ -90,7 +90,10 @@ class MapPropertiesDialog(
       model.random = bool
     }) //Added option in user interface for random map generation
     
-  val maxIter = round(log(fHeight*fWidth/150)/log(2))
+  val minRoomSize = 150 // The minimum average room size
+  val mapHeight = (Integer) fHeight.getValue()
+  val mapWidth = (Integer) fWidth.getValue()
+  val maxIter = round(log(mapHeight*mapWidth/minRoomSize)/log(2))
 
   val iter = new NumberSpinner( //Added adjustable iter for Random map generation
       1, maxIter,
