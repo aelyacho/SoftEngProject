@@ -1,23 +1,23 @@
 package rpgboss.model.resource
 
 /** Contains the representation of the rooms (2D-arrays) and methods to interact with these
-  *
-  * This object contains a 2D-array representation for each room, and methods
-  * that makes it easier to obtain a location to put events on the map
-  *
-  * Below are listed the most important variable and methods:
-  * - totalRooms: Is the amount of rooms on the map
-  * - rooms: Is an array containing each room of the map
-  * - createRepr: This function will create the 2D-array for each room (is already done automatically when the map is generated)
-  * - getXCoordinates: Gives a random x-coordinate of a random room
-  * - getYCoordinates: Gives a random y-coordinate in the same room as the x-coordinate
-  *    => Notice that getXCoordinates & getYCoordinates could give coordinates where there could already be an element .A system preventing
-  *       this has yet to be implemented.
-  * - eventAdded & decorationAdded: These functions are to be used after the events/decorations have been successfully added to the map.
-  *                                 Their job is to modify the 2D-vector of the corresponding room to denote the presence of these elements.
-  *
-  */
-object MapInfo {
+ *
+ * This object contains a 2D-array representation for each room, and methods
+ * that makes it easier to obtain a location to put events on the map
+ *
+ * Below are listed the most important variable and methods:
+ * - totalRooms: Is the amount of rooms on the map
+ * - rooms: Is an array containing each room of the map
+ * - createRepr: This function will create the 2D-array for each room (is already done automatically when the map is generated)
+ * - getXCoordinates: Gives a random x-coordinate of a random room
+ * - getYCoordinates: Gives a random y-coordinate in the same room as the x-coordinate
+ *     Notice that getXCoordinates & getYCoordinates could give coordinates where there could already be an element .A system preventing
+ *       this has yet to be implemented.
+ * - eventAdded & decorationAdded: These functions are to be used after the events/decorations have been successfully added to the map.
+ *                                 Their job is to modify the 2D-vector of the corresponding room to denote the presence of these elements.
+ *
+ */
+object mapInfo {
   /** Amount of rooms on the map*/
   var totalRooms = 0
   /** Array containing all the rooms*/

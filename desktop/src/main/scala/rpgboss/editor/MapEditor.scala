@@ -34,7 +34,7 @@ import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
-import rpgboss.model.resource.MapInfo
+import rpgboss.model.resource.mapInfo
 
 import scala.io.Source
 
@@ -215,7 +215,7 @@ class MapEditor(
   val enemySpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {enemyButton.amount = x; println("Amount of enemies desired: "+x)})
   val npcSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {npcButton.amount = x; println("Amount of NPC's desired: "+x)})
   val chestSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {chestButton.amount = x; println("Amount of treasure chests desired: "+x)})
-  val teleporterSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {teleporterButton.minDistance = x; println("Amount of teleporters desired: "+x)})
+  val teleporterSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {teleporterButton.minDistance = x; println("Min. distance btwn teleporters desired: "+x)})
 
   toolbar.contents += undoButton
 
@@ -341,9 +341,9 @@ class MapEditor(
       repaintRegion(TileRect(event.x.toInt, event.y.toInt))
 
       if(eventArr.length == 2)
-        MapInfo.eventAdded((event.x - 0.5f).toInt, (event.y - 0.5f).toInt)
+        mapInfo.eventAdded((event.x - 0.5f).toInt, (event.y - 0.5f).toInt)
       else
-        MapInfo.eventAdded()
+        mapInfo.eventAdded()
     })
   }
 
@@ -395,7 +395,7 @@ class MapEditor(
 
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
-      MapInfo.eventAdded(e.x.toInt, e.y.toInt)
+      mapInfo.eventAdded(e.x.toInt, e.y.toInt)
     }
 
     def onCancel(e: RpgEvent) =
@@ -431,7 +431,7 @@ class MapEditor(
       repaintRegion(canvasPanel.cursorSquare)
       // Delete the cached selected event id
       selectedEvtId = None
-      MapInfo.elementDeleted(event.x.toInt, event.y.toInt)
+      mapInfo.elementDeleted(event.x.toInt, event.y.toInt)
     }
   }
 

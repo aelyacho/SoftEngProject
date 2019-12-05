@@ -1,7 +1,7 @@
 package rpgboss.model.event
 
 import rpgboss.model.{MapLoc, SpriteSpec}
-import rpgboss.model.resource.MapInfo
+import rpgboss.model.resource.mapInfo
 
 /** generate a random value between 0 and x */
 object Randomizer {
@@ -16,7 +16,8 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
   private val npcAnimation = List(AnimationType.NONE.id, AnimationType.RANDOM_MOVEMENT.id)
   private val storeItems = Randomizer.getRandomVal(32)
   private def startRange: Int = if ((storeItems-12)>=0) storeItems-12 else 0
-  private val quotesFile = scala.io.Source.fromFile("/Users/aeya/Desktop/rpgboss-team3/desktop/src/main/resources/quotes.txt")
+  /** quotes fetched from https://gist.github.com/signed0/d70780518341e1396e11 */
+  private val quotesFile = scala.io.Source.fromFile("./desktop/src/main/resources/quotes.txt")
   private val quotes = quotesFile.getLines().toArray
 
   /** @return a Random action (Open a store or show a random quote) depending on the evtype value which is a random value between 0 and 1 */
@@ -32,8 +33,8 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
 
   def createEvent(): Array[RpgEvent] = {
     val state = RpgEventState()
-    val x = MapInfo.getXCoordinate() + 0.5f
-    val y = MapInfo.getYCoordinate() + 0.5f
+    val x = mapInfo.getXCoordinate() + 0.5f
+    val y = mapInfo.getYCoordinate() + 0.5f
     val newId:Int = (() => {currentEventId += 1; currentEventId})()
 
     state.sprite = Some(SpriteSpec("sys/vx_chara01_a.png", Randomizer.getRandomVal(8),Randomizer.getRandomVal(3),Randomizer.getRandomVal(4)))
@@ -49,8 +50,8 @@ class EnemyCreator(eventId:Int) extends RpgEventCreator(eventId) {
 
   def createEvent(): Array[RpgEvent] = {
     val state = RpgEventState()
-    val x = MapInfo.getXCoordinate() + 0.5f
-    val y = MapInfo.getYCoordinate() + 0.5f
+    val x = mapInfo.getXCoordinate() + 0.5f
+    val y = mapInfo.getYCoordinate() + 0.5f
     val newId:Int = (() => {currentEventId += 1; currentEventId})()
 
     state.sprite = Some(SpriteSpec("sys/vx_chara08_a.png" ,Randomizer.getRandomVal(8),Randomizer.getRandomVal(3),Randomizer.getRandomVal(4)))
@@ -74,8 +75,8 @@ class TreasureChestCreator(eventId:Int) extends RpgEventCreator(eventId) {
     openedState.sprite = Some(SpriteSpec("sys/!$chest-opengameart-Blarumyrran.png",0,2,0))
     openedState.cmds = Array(ShowText(Array("Empty")))
 
-    val x = MapInfo.getXCoordinate() + 0.5f
-    val y = MapInfo.getYCoordinate() + 0.5f
+    val x = mapInfo.getXCoordinate() + 0.5f
+    val y = mapInfo.getYCoordinate() + 0.5f
     val newId:Int = (() => {currentEventId += 1; currentEventId})()
 
     Array(RpgEvent(newId, "Event%05d".format(newId), x, y, Array(closedState, openedState)))
@@ -87,22 +88,22 @@ class TeleporterCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
 
   def createEvent(distance: Int, mapName:String): Array[RpgEvent] = {
     val teleporter1 = RpgEventState()
-    val x1 = MapInfo.getXCoordinate() + 0.5f
-    val y1 = MapInfo.getYCoordinate() + 0.5f
+    val x1 = mapInfo.getXCoordinate() + 0.5f
+    val y1 = mapInfo.getYCoordinate() + 0.5f
     val newId1:Int = (() => {currentEventId += 1; currentEventId})()
     val newUserY1 = y1 + 1f
-    MapInfo.forgetCoordinates()
+    mapInfo.forgetCoordinates()
 
     val teleporter2 = RpgEventState()
-    var x2 = MapInfo.getXCoordinate() + 0.5f
-    var y2 = MapInfo.getYCoordinate() + 0.5f
+    var x2 = mapInfo.getXCoordinate() + 0.5f
+    var y2 = mapInfo.getYCoordinate() + 0.5f
     val newId2:Int = (() => {currentEventId += 1; currentEventId})()
     var newUserY2 = y2 + 1f
 
     while(Math.abs(x1 - x2) < distance || Math.abs(y1 - y2) < distance) {
-      MapInfo.forgetCoordinates()
-      x2 = MapInfo.getXCoordinate() + 0.5f
-      y2 = MapInfo.getYCoordinate() + 0.5f
+      mapInfo.forgetCoordinates()
+      x2 = mapInfo.getXCoordinate() + 0.5f
+      y2 = mapInfo.getYCoordinate() + 0.5f
       newUserY2 = y2 + 1f
     }
 
