@@ -42,7 +42,7 @@ object TestScriptThread {
   }
 }
 
-class ProjectTest extends ShouldMatchers {
+class ProjectTest extends UnitSpec {
   def paint(array: Array[Array[Byte]], x: Int, y: Int,
             bytes: Array[Byte]) = {
     array.length should be > (0)

@@ -63,20 +63,20 @@ object mapInfo {
       currentY = y - room.y
     }
 
-    for(roomId <- 0 until totalRooms) {
-      breakable {
-        val room = rooms(roomId)
-        val roomX = room.x
-        val roomXLim = roomX + room.w
-        val roomY = room.y
-        val roomYLim = roomY + room.h
+    breakable {
+     for(roomId <- 0 until totalRooms) {
+       val room = rooms(roomId)
+       val roomX = room.x
+       val roomXLim = roomX + room.w
+       val roomY = room.y
+       val roomYLim = roomY + room.h
 
-        if (((roomX <= x) && (x <= roomXLim)) && ((roomY <= y) && (y <= roomYLim))) {
-          currentRoomIdx = roomId
-          convert()
-          break
-        }
-      }
+       if (((roomX <= x) && (x <= roomXLim)) && ((roomY <= y) && (y <= roomYLim))) {
+         currentRoomIdx = roomId
+         convert()
+         break
+       }
+     }
     }
   }
 

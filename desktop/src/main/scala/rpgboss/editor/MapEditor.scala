@@ -10,7 +10,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.misc._
 import rpgboss.editor.misc.GraphicsUtils._
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import rpgboss.model.event.{EnemyCreator, EventHeight, NPCCreator, RpgEvent, RpgEventCreator, TeleporterCreator, TreasureChestCreator}
+import rpgboss.model.event.{EventHeight, RpgEvent}
 
 import scala.math._
 import scala.swing._
@@ -34,6 +34,7 @@ import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
+import rpgboss.model.event.creators.{EnemyCreator, NPCCreator, TeleporterCreator, TreasureChestCreator}
 import rpgboss.model.resource.mapInfo
 
 import scala.io.Source
