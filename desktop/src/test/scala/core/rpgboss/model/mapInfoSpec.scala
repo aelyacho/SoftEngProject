@@ -28,7 +28,7 @@ class mapInfoSpec extends UnitSpec {
     var roomIdx = helper.findRoom(x, y, allRooms)
     var room = allRooms(roomIdx)
     var roomRepresentation = room.representation
-    roomRepresentation(y - room.y)(x - room.x) == mapElement.EVENT
+    roomRepresentation(y - room.y)(x - room.x) should equal (mapInfo.mapElement.EVENT)
 
     /**Testing if the method decorationAdded works*/
     x = mapInfo.getXCoordinate()
@@ -37,7 +37,7 @@ class mapInfoSpec extends UnitSpec {
     roomIdx = helper.findRoom(x, y, allRooms)
     room = allRooms(roomIdx)
     roomRepresentation = room.representation
-    roomRepresentation(y - room.y)(x - room.x) == mapElement.DECORATION
+    roomRepresentation(y - room.y)(x - room.x) should equal (mapInfo.mapElement.DECORATION)
 
     /**Testing if the methods work with coordinates with respect to the map*/
     x = mapInfo.getXCoordinate()
@@ -46,6 +46,6 @@ class mapInfoSpec extends UnitSpec {
     roomIdx = helper.findRoom(x, y, allRooms)
     room = allRooms(roomIdx)
     roomRepresentation = room.representation
-    roomRepresentation(y - room.y)(x - room.x) == mapElement.EVENT
+    roomRepresentation(y - room.y)(x - room.x) should equal (mapInfo.mapElement.EVENT)
   }
 }
