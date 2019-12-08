@@ -9,7 +9,7 @@ import java.io._
 import java.util.Arrays
 import org.json4s.DefaultFormats
 import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode, Node}
-import rpgboss.model.resource.random_map_generation.{Container}
+import rpgboss.model.resource.random_map_generation.{Container, MapGenerator}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -135,80 +135,6 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
     apply(proj, name, m)
   }
 
-  def drawLine(a: Array[Array[Byte]], tile: Array[Byte], x1: Int, y1: Int, x2: Int, y2: Int, i: Int): Unit ={
-    var ctr = i
-    if(y1==y2){//Horizontal
-      while(ctr>0){
-        var c = x1
-        while(c<x2) {
-          a(y1+ctr-1)(c*3) = tile(0)
-          a(y1+ctr-1)(c*3+1) = tile(1)
-          a(y1+ctr-1)(c*3+2) = tile(2)
-          c = c + 1
-        }
-        ctr = ctr - 1
-      }
-    }
-    else if(x1==x2){//Vertical
-      while(ctr>0){
-        var c = y1
-        while(c<y2) {
-          a(c)(x1*3) = tile(0)
-          a(c)(x1*3+1) = tile(1)
-          a(c)(x1*3+2) = tile(2)
-          c = c + 1
-        }
-        ctr = ctr - 1
-      }
-    }
-  }
-
-  def drawRect(a: Array[Array[Byte]], tile: Array[Byte], x: Int, y: Int, w: Int, h: Int, fill :Boolean): Unit ={
-    if(fill){
-      var ctr = 0
-      while(ctr<h){
-        drawLine(a, tile, x, y+ctr, x+w, y+ctr, 1)
-        ctr = ctr + 1
-      }
-    }
-    else {
-      drawLine(a, tile, x, y, x + w, y, 1)
-      drawLine(a, tile, x + w, y, x + w, y + h, 1)
-      drawLine(a, tile, x, y + h, x + w + 1, y + h, 1) //+1 to fill bottom right corner
-      drawLine(a, tile, x, y, x, y + h, 1)
-    }
-  }
-
-  def generateTree(width :Int, height :Int, iter: Int) ={
-    def splitContainer(c: Container, iter: Int): Node[Container] ={
-      if(iter == 0) new Node[Container](c, EmptyNode, EmptyNode)
-      else {
-        val sr = c.randomSplit
-        new Node[Container](c, splitContainer(sr(0), iter-1), splitContainer(sr(1), iter-1))
-      }
-    }
-    splitContainer(Container(0, 0, width, height), iter)
-  }
-
-  def drawTree(a: Array[Array[Byte]], t: Btree[Container], floorTile: Array[Byte], wallTile: Array[Byte]): Unit ={//Parameters Added
-    t.getLeafs.foreach((n: Btree[Container]) =>{
-      drawRect(a, wallTile, n.value.x, n.value.y, n.value.w, n.value.h ,true)//29 1
-      drawRect(a, floorTile, n.value.room.x, n.value.room.y, n.value.room.w, n.value.room.h ,true)//38 1
-      //println("ROOM", "WIDTH: " + n.value.room.w, "HEIGHT: " + n.value.room.h)
-    })
-
-    def drawCorridor(b :Btree[Container]){//Drawing Corridors
-      if(b != EmptyNode){
-        if(b.left!=EmptyNode&&b.right!=EmptyNode){
-          val p1 = b.left.value.center
-          val p2 = b.right.value.center
-          drawLine(a, floorTile, p1.x, p1.y, p2.x, p2.y, 1)
-        }
-      }
-    }
-    t.foreach(drawCorridor)
-  }
-
   def emptyMapData(xSize: Int, ySize: Int) = {
     def autoLayer() = {
       // Make a whole row of that autotile triples
@@ -225,13 +151,11 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
   }
 
   def randomMapData(xSize: Int, ySize: Int, iter:Int, floorTile: Array[Byte], wallTile: Array[Byte]) = {
-    def autoLayer() = {
-      // Make a whole row of that autotile triples
+    def randomLayer() = {
       val row = makeRowArray(xSize, autotileSeed)
-      // Make multiple rows
       val x = Array.fill(ySize)(row.clone())
-      val tree = generateTree(xSize, ySize, iter)
-      drawTree(x, tree, floorTile, wallTile)
+
+      MapGenerator.generateMap(xSize, ySize, iter, x, floorTile, wallTile)
       x
     }
     def emptyLayer() = {
@@ -239,7 +163,7 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
       Array.fill(ySize)(row.clone())
     }
 
-    RpgMapData(autoLayer(), emptyLayer(), emptyLayer(), Map())
+    RpgMapData(randomLayer(), emptyLayer(), emptyLayer(), Map())
   }
 
   def defaultMapData() = emptyMapData(initXSize, initYSize)
