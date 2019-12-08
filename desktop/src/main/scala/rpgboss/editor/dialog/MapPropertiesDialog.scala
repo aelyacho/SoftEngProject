@@ -1,27 +1,29 @@
 package rpgboss.editor.dialog
 
+import javax.swing.ImageIcon
 import rpgboss.model._
 import rpgboss.model.resource._
 import scala.swing._
 import rpgboss.editor.uibase._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.editor.StateMaster
-import rpgboss.editor.resourceselector.MusicField
-import rpgboss.editor.resourceselector.TilesetArrayField
-import rpgboss.editor.resourceselector.TilesetArrayField
+import rpgboss.editor.resourceselector.{BattleBackgroundField, MusicField, SpriteField, TilesetArrayField}
 import rpgboss.editor.misc.RandomEncounterSettingsPanel
 import rpgboss.editor.Internationalized._
-import rpgboss.editor.resourceselector.BattleBackgroundField
+import rpgboss.editor.cache.MapTileCache
+import rpgboss.editor.imageset.metadata.TilesetsMetadataPanel
+import rpgboss.editor.imageset.selector.TabbedTileSelector
 import rpgboss.editor.uibase.SwingUtils.boolField
+import rpgboss.lib.Utils
 import scala.math._
 
 class MapPropertiesDialog(
-  owner: Window,
-  sm: StateMaster,
-  title: String,
-  initialMap: RpgMap,
-  initialMapData: RpgMapData,
-  onOk: (RpgMap, RpgMapData) => Any)
+                           owner: Window,
+                           sm: StateMaster,
+                           title: String,
+                           initialMap: RpgMap,
+                           initialMapData: RpgMapData,
+                           onOk: (RpgMap, RpgMapData) => Any)
   extends StdDialog(owner, title + " - " + initialMap.displayId) {
 
   centerDialog(new Dimension(400, 400))
@@ -33,7 +35,7 @@ class MapPropertiesDialog(
 
     val newMapData = {
       if(model.random){//Added for random map generation (if random boolean is true, get random map data instead of the default data)
-        RpgMap.randomMapData(model.xSize, model.ySize, model.iter)
+        RpgMap.randomMapData(model.xSize, model.ySize, model.iter, floorTile, wallTile)
       }else {
         if (model.xSize == initialMap.metadata.xSize &&
           model.ySize == initialMap.metadata.ySize) {
@@ -83,23 +85,95 @@ class MapPropertiesDialog(
       owner, sm.getProjData, model.randomEncounterSettings)
 
   val random = boolField(//Checkbox for activating random map generation
-    getMessage("Random Map Generation"),
+    "Random Map Generation",
     model.random,
     (bool:Boolean)=>{
-      iter.enabled_=(bool)
+      randomGuiComponentsList.foreach((x)=> x.enabled_=(bool))// Enable/Disable random GUI components
       model.random = bool
     }) //Added option in user interface for random map generation
-    
+
   val minRoomSize = 150 // The minimum average room size
   val mapHeight = fHeight.getValue
   val mapWidth = fWidth.getValue
   val maxIter: Int = round(log(mapHeight*mapWidth/minRoomSize)/log(2)).toInt
 
   val iter = new NumberSpinner( //Added adjustable iter for Random map generation
-      1, maxIter,
-      model.iter,
-      model.iter = _)
-  iter.enabled_=(model.random)
+    1, maxIter,
+    model.iter,
+    model.iter = _)
+
+  var floorTile : Array[Byte] = RpgMap.initFloorTile//Added
+  var wallTile : Array[Byte] = RpgMap.initWallTile//Added
+
+  val autotiles = Autotile.list(sm.getProj).map(Autotile.readFromDisk(sm.getProj, _))
+  val tilesets = Tileset.list(sm.getProj).map(Tileset.readFromDisk(sm.getProj, _))
+
+  def changeTile(newTile: Array[Byte], setTile: (Array[Byte]) => Unit, canPass: Boolean): Unit ={
+    if(canPass == isPassable(newTile)) {
+      setTile(newTile)
+    }
+  }
+
+  def isPassable(tile: Array[Byte]): Boolean ={
+    val typ = tile(0)
+    val x = tile(1)
+    val y = tile(2)
+    var passability = 0
+
+    if(typ!=RpgMap.autotileByte){
+      passability = tilesets(typ).metadata.blockedDirsAry(y)(x)
+    }else{
+      passability = autotiles(y*8+x).metadata.blockedDirs
+    }
+
+    passability == 0
+  }
+
+  def onFloorSelection(s: Array[Array[Array[Byte]]]): Unit = {
+    if(isPassable(s(0)(0))){
+      floorTileSelector.canSelectLabel.text_=("YES")
+    }else{
+      floorTileSelector.canSelectLabel.text_=("NO")
+    }
+  }
+
+  def onWallSelection(s: Array[Array[Array[Byte]]]): Unit = {
+    if(isPassable(s(0)(0))){
+      wallTileSelector.canSelectLabel.text_=("NO")
+    }else{
+      wallTileSelector.canSelectLabel.text_=("YES")
+    }
+  }
+
+  val floorTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setFloorTile, true), onFloorSelection)
+  val wallTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setWallTile, false), onWallSelection)
+
+
+  val floorTileSelectionBtn : Button = Button("") {
+    floorTileSelector.open()
+  }
+
+  val wallTileSelectionBtn : Button = Button("") {
+    wallTileSelector.open()
+  }
+
+  def setFloorTile(newTile: Array[Byte]) = {
+    floorTile = newTile
+    floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
+  }
+
+  def setWallTile(newTile: Array[Byte]) = {
+    wallTile = newTile
+    wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
+  }
+
+  val tileCache = new MapTileCache(sm.assetCache, initialMap)
+
+  floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
+  wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
+
+  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn)//A list of all the components of the random generation GUI
+  randomGuiComponentsList.foreach((x)=> x.enabled_=(model.random))// Initialise components' enabled_
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
@@ -130,7 +204,9 @@ class MapPropertiesDialog(
 
       contents += new DesignGridPanel {// Grid panel for the UI of random map generation
         row().grid().add(random)
-        row().grid(lbl(getMessage("Iter") + ":")).add(iter)
+        row().grid(lbl("Iterations: ")).add(iter)
+        row().grid(lbl("Floor Tile: ")).add(floorTileSelectionBtn)
+        row().grid(lbl("Wall Tile: ")).add(wallTileSelectionBtn)
       }
 
       contents += fRandomEncounters

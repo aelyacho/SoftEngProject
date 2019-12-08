@@ -18,7 +18,9 @@ trait TileBytesSelector {
  * Panel to browse and select the available tiles
  * @param sm
  */
-class TabbedTileSelector(sm: StateMaster)
+class TabbedTileSelector(sm: StateMaster,
+                         allowMultiselect : Boolean = true,
+                         onSelection: (Array[Array[Array[Byte]]]) => Unit = (s: Array[Array[Array[Byte]]]) => Unit)//Added
   extends BoxPanel(Orientation.Horizontal) with SelectsMap {
   val thisSidebar = this
 
@@ -35,16 +37,21 @@ class TabbedTileSelector(sm: StateMaster)
     new TabbedPane() {
       tabPlacement = Alignment.Bottom
 
+      def selectBytesF(selected: Array[Array[Array[Byte]]]) = {//Added
+        onSelection(selected)
+        selectedTileCodes = selected
+      }
+
       // Create a tab for all autotiles
       pages += new TabbedPane.Page("A",
-        new AutotileSelector(sm, map, selectedTileCodes = _))
+        new AutotileSelector(sm, map, selectBytesF, allowMultiselect = allowMultiselect))//Added
 
       // Create multiple tabs for the remaining tiles
       map.metadata.tilesets.zipWithIndex.map({
         case (tsName, i) =>
           val tileset = sm.assetCache.getTileset(tsName)
           val tabComponent =
-            new TilesetTileSelector(i.toByte, tileset, selectedTileCodes = _)
+            new TilesetTileSelector(i.toByte, tileset, selectBytesF,  allowMultiselect = allowMultiselect)//Added
 
           pages += new TabbedPane.Page("T%d".format(i), tabComponent)
       })
