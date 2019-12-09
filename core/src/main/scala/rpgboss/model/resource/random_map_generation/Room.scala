@@ -6,18 +6,17 @@ package rpgboss.model.resource.random_map_generation
  */
 
 class Room(c: Container) {
-  val r = scala.util.Random
 
   val max_hDistance : Int = c.w/3 // Maximum horizontal distance
   val max_vDistance : Int = c.h/3 // Maximum vertical distance
 
-  val x = c.x + r.nextInt(max_hDistance)
-  val y = c.y + r.nextInt(max_vDistance)
+  val x = c.x + MapGeneratorConstants.randomizer.nextInt(max_hDistance)
+  val y = c.y + MapGeneratorConstants.randomizer.nextInt(max_vDistance)
 
   var w = c.w - (x - c.x)
   var h = c.h - (y - c.y)
 
-  w = w - r.nextInt(max_hDistance)
-  h = h - r.nextInt(max_vDistance)
+  w = w - MapGeneratorConstants.randomizer.nextInt(max_hDistance)
+  h = h - MapGeneratorConstants.randomizer.nextInt(max_vDistance)
 
 }

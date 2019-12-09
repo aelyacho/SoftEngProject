@@ -11,32 +11,24 @@ object MapGenerator {
    *
    * @param a       2d array that represents the map
    * @param tile    tile used in the drawing [array of 3 elements (type, xTile, yTile)]
-   * @param i       amount of times to repeat the drawing process
    */
-  def drawLine(a: Array[Array[Byte]], tile: Array[Byte], x1: Int, y1: Int, x2: Int, y2: Int, i: Int): Unit ={
-    var ctr = i
+  def drawLine(a: Array[Array[Byte]], tile: Array[Byte], x1: Int, y1: Int, x2: Int, y2: Int): Unit ={
     if(y1==y2){//Horizontal
-      while(ctr>0){
-        var c = x1
-        while(c<x2) {
-          a(y1+ctr-1)(c*3) = tile(0)
-          a(y1+ctr-1)(c*3+1) = tile(1)
-          a(y1+ctr-1)(c*3+2) = tile(2)
-          c = c + 1
-        }
-        ctr = ctr - 1
+      var c = x1
+      while(c<x2) {
+        a(y1)(c*3) = tile(0)
+        a(y1)(c*3+1) = tile(1)
+        a(y1)(c*3+2) = tile(2)
+        c = c + 1
       }
     }
     else if(x1==x2){//Vertical
-      while(ctr>0){
-        var c = y1
-        while(c<y2) {
-          a(c)(x1*3) = tile(0)
-          a(c)(x1*3+1) = tile(1)
-          a(c)(x1*3+2) = tile(2)
-          c = c + 1
-        }
-        ctr = ctr - 1
+      var c = y1
+      while(c<y2) {
+        a(c)(x1*3) = tile(0)
+        a(c)(x1*3+1) = tile(1)
+        a(c)(x1*3+2) = tile(2)
+        c = c + 1
       }
     }
   }
@@ -52,15 +44,15 @@ object MapGenerator {
     if(fill){
       var ctr = 0
       while(ctr<h){
-        drawLine(a, tile, x, y+ctr, x+w, y+ctr, 1)
+        drawLine(a, tile, x, y+ctr, x+w, y+ctr)
         ctr = ctr + 1
       }
     }
     else {
-      drawLine(a, tile, x, y, x + w, y, 1)
-      drawLine(a, tile, x + w, y, x + w, y + h, 1)
-      drawLine(a, tile, x, y + h, x + w +1, y + h, 1) //+1 to fill bottom right corner
-      drawLine(a, tile, x, y, x, y + h, 1)
+      drawLine(a, tile, x, y, x + w, y)
+      drawLine(a, tile, x + w, y, x + w, y + h)
+      drawLine(a, tile, x, y + h, x + w +1, y + h) //+1 to fill bottom right corner
+      drawLine(a, tile, x, y, x, y + h)
     }
   }
 
@@ -105,7 +97,7 @@ object MapGenerator {
         if(b.left!=EmptyNode&&b.right!=EmptyNode){
           val p1 = b.left.value.center
           val p2 = b.right.value.center
-          drawLine(a, floorTile, p1.x, p1.y, p2.x, p2.y, 1)
+          drawLine(a, floorTile, p1.x, p1.y, p2.x, p2.y)
         }
       }
     }
