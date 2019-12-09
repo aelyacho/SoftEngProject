@@ -142,19 +142,6 @@ object mapInfo {
     roomY +  currentY
   }
 
-  /** Used to signal when an element has been deleted
-   *
-   * @param x X-coordinate of the element
-   * @param y Y-coordinate of the element
-   */
-  def elementDeleted(x:Int, y:Int): Unit ={
-    findRoom(x, y)
-    val room = rooms(currentRoomIdx)
-    val roomRepr = room.representation
-    roomRepr(currentY)(currentX) = mapElement.FREE
-    forgetCoordinates()
-  }
-
   /** Used to signal that an event has been added */
   def eventAdded(x:Int = currentX, y:Int = currentY): Unit = addElement(x, y, mapElement.EVENT)
   /** Used to signal that a decoration has been added */
