@@ -17,7 +17,6 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     evType match {
       case 0 => Array(OpenStore(IntArrayParameter(Array.range(startRange, storeItems))))
       case 1 => Array(ShowText(Array(quotes(Randomizer.getRandomVal(quotes.length))), useCharacterFace = true, characterId = Randomizer.getRandomVal(5)))
-      case _ => throw new Exception("Invalid Event Type")
     }
 
 
@@ -30,7 +29,6 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     val newId:Int = (() => {currentEventId += 1; currentEventId})()
 
     state.sprite = Some(SpriteSpec("sys/vx_chara01_a.png", Randomizer.getRandomVal(8),Randomizer.getRandomVal(3),Randomizer.getRandomVal(4)))
-    state.height = Randomizer.getRandomVal(3)
     state.animationType = npcAnimation(Randomizer.getRandomVal(2))
     state.cmds = getRandomAction(Randomizer.getRandomVal(2))
     Array(RpgEvent(newId, "Event%05d".format(newId), x, y, Array(state)))

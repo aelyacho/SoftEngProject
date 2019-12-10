@@ -384,16 +384,6 @@ class MapEditor(
       if (isNewEvent) {
         incrementEventId(vs)
       }
-      vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
-      println("------------------------------\n" +
-              "       CURRENT MAP EVENTS     \n"+
-       "------------------------------\n")
-      vs.nextMapData.events.map(a =>println(a))
-      println("\n event states:\n")
-
-     // e.states map(a => println(a))
-      println("------------------------------ END ------------------------------")
-
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
       mapInfo.eventAdded(e.x.toInt, e.y.toInt)
