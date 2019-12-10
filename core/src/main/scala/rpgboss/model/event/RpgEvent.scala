@@ -50,14 +50,6 @@ case class RpgEvent(
   var params: Array[EventParameter[_]] = Array()) {
 
   def isInstance = eventClassId >= 0
-  override def toString() : String = {
-    s"id: $id - "+
-      s"name: $name - " +
-      s"x: $x, y: $y - " +
-      s"states: ${states.map(s => s.print())} - " +
-      s"eventClassId: $eventClassId - " +
-      s"params: $params "
-  }
 }
 
 object RpgEvent {
@@ -90,19 +82,6 @@ case class RpgEventState(
   var runOnceThenIncrementState: Boolean = false,
 
   var cmds: Array[EventCmd] = Array()) {
-  override def toString() : String = {
-    "------------------------ RPG EVENT STATE VARIABLES------------------------\n"+
-      s"Conditions: ${conditions map(cond => println(cond))}, " +
-      s"Sprite: $sprite, " +
-        s"Height: $height, " +
-      s"affix dir: $affixDirection, " +
-      s"trigger: $trigger, " +
-      s"animationType: $animationType, " +
-      s"runOncethenInc: $runOnceThenIncrementState, " +
-        s"cmd's: ${cmds map(cmd => println(cmd))}"
-    }
-
-  def print(): Unit = println(this)
 
   def distinctChars = {
     val set = new DistinctCharacterSet
