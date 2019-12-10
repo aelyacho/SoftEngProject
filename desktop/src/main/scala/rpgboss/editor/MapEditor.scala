@@ -386,7 +386,6 @@ class MapEditor(
       }
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
-      mapInfo.eventAdded(e.x.toInt, e.y.toInt)
     }
 
     def onCancel(e: RpgEvent) =
@@ -422,7 +421,6 @@ class MapEditor(
       repaintRegion(canvasPanel.cursorSquare)
       // Delete the cached selected event id
       selectedEvtId = None
-      mapInfo.elementDeleted(event.x.toInt, event.y.toInt)
     }
   }
 

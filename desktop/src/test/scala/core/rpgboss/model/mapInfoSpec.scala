@@ -21,31 +21,4 @@ class mapInfoSpec extends UnitSpec {
     val isInRoom = helper.findRoom(x, y, allRooms)
     isInRoom should not equal (-1)
   }
-
-  "Representation of rooms" should "update accordingly" in {
-    /**Testing if the method eventAdded works*/
-    mapInfo.eventAdded()
-    var roomIdx = helper.findRoom(x, y, allRooms)
-    var room = allRooms(roomIdx)
-    var roomRepresentation = room.representation
-    roomRepresentation(y - room.y)(x - room.x) should equal (mapInfo.mapElement.EVENT)
-
-    /**Testing if the method decorationAdded works*/
-    x = mapInfo.getXCoordinate()
-    y = mapInfo.getYCoordinate()
-    mapInfo.decorationAdded()
-    roomIdx = helper.findRoom(x, y, allRooms)
-    room = allRooms(roomIdx)
-    roomRepresentation = room.representation
-    roomRepresentation(y - room.y)(x - room.x) should equal (mapInfo.mapElement.DECORATION)
-
-    /**Testing if the methods work with coordinates with respect to the map*/
-    x = mapInfo.getXCoordinate()
-    y = mapInfo.getYCoordinate()
-    mapInfo.eventAdded(x, y)
-    roomIdx = helper.findRoom(x, y, allRooms)
-    room = allRooms(roomIdx)
-    roomRepresentation = room.representation
-    roomRepresentation(y - room.y)(x - room.x) should equal (mapInfo.mapElement.EVENT)
-  }
 }
