@@ -29,10 +29,12 @@ class NPCCreatorSpec extends UnitSpec with GeneratedMap {
     val spriteEvent2 = npcEvent2State.sprite.get
     val spriteEvent3 = npcEvent3State.sprite.get
 
-  /** Testing the 3 fields of SpriteSpec (direction, spriteIndex & step) except for name to check wheter they are randomly assigned*/
-    assert(spriteEvent1.dir!=spriteEvent2.dir || spriteEvent1.dir!=spriteEvent3.dir || spriteEvent2.dir!=spriteEvent3.dir)
-    assert(spriteEvent1.spriteIndex!=spriteEvent2.spriteIndex || spriteEvent1.spriteIndex!=spriteEvent3.spriteIndex || spriteEvent2.spriteIndex!=spriteEvent3.spriteIndex)
-    assert(spriteEvent1.step!=spriteEvent2.step || spriteEvent1.step!=spriteEvent3.step || spriteEvent2.step!=spriteEvent3.step)
+  /** Testing the 3 fields of SpriteSpec (direction, spriteIndex & step) except for name
+   * to check wheter they are different since they are randomly assigned
+   */
+    spriteEvent1.equals(spriteEvent2) shouldBe false
+    spriteEvent1.equals(spriteEvent3) shouldBe false
+    spriteEvent2.equals(spriteEvent3) shouldBe false
   }
 
   "NPC'S" should "have random animations: either move randomly or don't move" in {

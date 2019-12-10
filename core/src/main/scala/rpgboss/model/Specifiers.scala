@@ -147,7 +147,11 @@ case class SpriteSpec(
   name: String,
   spriteIndex: Int,
   dir: Int = SpriteSpec.Directions.SOUTH,
-  step: Int = SpriteSpec.Steps.STILL)
+  step: Int = SpriteSpec.Steps.STILL) {
+  def equals(spriteObj: SpriteSpec): Boolean = {
+    this.spriteIndex==spriteObj.spriteIndex && this.dir==spriteObj.dir && this.step==spriteObj.step
+  }
+}
 
 object SpriteSpec {
   object Directions {
@@ -176,4 +180,5 @@ object SpriteSpec {
 
     val TOTALSTEPS = 4
   }
+
 }
