@@ -1,23 +1,22 @@
 package rpgboss.model.resource
-import Array._
 
 /** Contains the representation of the rooms (2D-arrays) and methods to interact with these
-  *
-  * This object contains a 2D-array representation for each room, and methods
-  * that makes it easier to obtain a location to put events on the map
-  *
-  * Below are listed the most important variable and methods:
-  * - totalRooms: Is the amount of rooms on the map
-  * - rooms: Is an array containing each room of the map
-  * - createRepr: This function will create the 2D-array for each room (is already done automatically when the map is generated)
-  * - getXCoordinates: Gives a random x-coordinate of a random room
-  * - getYCoordinates: Gives a random y-coordinate in the same room as the x-coordinate
-  *    => Notice that getXCoordinates & getYCoordinates could give coordinates where there could already be an element .A system preventing
-  *       this has yet to be implemented.
-  * - eventAdded & decorationAdded: These functions are to be used after the events/decorations have been successfully added to the map.
-  *                                 Their job is to modify the 2D-vector of the corresponding room to denote the presence of these elements.
-  *
-  */
+ *
+ * This object contains a 2D-array representation for each room, and methods
+ * that makes it easier to obtain a location to put events on the map
+ *
+ * Below are listed the most important variable and methods:
+ * - totalRooms: Is the amount of rooms on the map
+ * - rooms: Is an array containing each room of the map
+ * - createRepr: This function will create the 2D-array for each room (is already done automatically when the map is generated)
+ * - getXCoordinates: Gives a random x-coordinate of a random room
+ * - getYCoordinates: Gives a random y-coordinate in the same room as the x-coordinate
+ *     Notice that getXCoordinates & getYCoordinates could give coordinates where there could already be an element .A system preventing
+ *       this has yet to be implemented.
+ * - eventAdded & decorationAdded: These functions are to be used after the events/decorations have been successfully added to the map.
+ *                                 Their job is to modify the 2D-vector of the corresponding room to denote the presence of these elements.
+ *
+ */
 object mapInfo {
   /** Amount of rooms on the map*/
   var totalRooms = 0
@@ -64,20 +63,20 @@ object mapInfo {
       currentY = y - room.y
     }
 
-    for(roomId <- 0 until totalRooms) {
-      breakable {
-        val room = rooms(roomId)
-        val roomX = room.x
-        val roomXLim = roomX + room.w
-        val roomY = room.y
-        val roomYLim = roomY + room.h
+    breakable {
+     for(roomId <- 0 until totalRooms) {
+       val room = rooms(roomId)
+       val roomX = room.x
+       val roomXLim = roomX + room.w
+       val roomY = room.y
+       val roomYLim = roomY + room.h
 
-        if (((roomX <= x) && (x <= roomXLim)) && ((roomY <= y) && (y <= roomYLim))) {
-          currentRoomIdx = roomId
-          convert()
-          break
-        }
-      }
+       if (((roomX <= x) && (x <= roomXLim)) && ((roomY <= y) && (y <= roomYLim))) {
+         currentRoomIdx = roomId
+         convert()
+         break
+       }
+     }
     }
   }
 
@@ -111,7 +110,7 @@ object mapInfo {
     rooms.foreach(room => {
       val roomHeight = room.h
       val roomWidth = room.w
-      val roomRepr = ofDim[Int](roomHeight, roomWidth)
+      val roomRepr = Array.ofDim[Int](roomHeight, roomWidth)
       room.representation = roomRepr
     })
   }
@@ -141,19 +140,6 @@ object mapInfo {
     currentY = numGen.nextInt(room.h)
     val roomY = room.y
     roomY +  currentY
-  }
-
-  /** Used to signal when an element has been deleted
-   *
-   * @param x X-coordinate of the element
-   * @param y Y-coordinate of the element
-   */
-  def elementDeleted(x:Int, y:Int): Unit ={
-    findRoom(x, y)
-    val room = rooms(currentRoomIdx)
-    val roomRepr = room.representation
-    roomRepr(currentY)(currentX) = mapElement.FREE
-    forgetCoordinates()
   }
 
   /** Used to signal that an event has been added */

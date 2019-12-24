@@ -10,7 +10,7 @@ import rpgboss.editor.uibase._
 import rpgboss.editor.misc._
 import rpgboss.editor.misc.GraphicsUtils._
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import rpgboss.model.event.{EnemyCreator, EventHeight, NPCCreator, RpgEvent, RpgEventCreator, TeleporterCreator, TreasureChestCreator}
+import rpgboss.model.event.{EventHeight, RpgEvent}
 
 import scala.math._
 import scala.swing._
@@ -34,6 +34,7 @@ import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
+import rpgboss.model.event.creators.{EnemyCreator, NPCCreator, TeleporterCreator, TreasureChestCreator}
 import rpgboss.model.resource.mapInfo
 
 import scala.io.Source
@@ -153,10 +154,11 @@ class MapEditor(
   }
 
   val enemyButton = new Button() {
+    var amount = 0
     action = new Action("Enemies") {
       def apply() = {
         val enemyCreator = new EnemyCreator(getEventId())
-        for (a <- 0 to 25) {
+        for (_ <- 0 to amount) {
           val enemyEvent = enemyCreator.createEvent()
           drawEvent(enemyEvent)
         }
@@ -164,21 +166,14 @@ class MapEditor(
     }
     icon = new ImageIcon(Utils.readClasspathImage(
       "hendrik-weiler-theme/tool.png"))
-
-    /*  ------ these lines of codes generate a list with all the possible spritesets used for the events ( will be used later)
-    var spritesfile = Source.fromFile("/Users/aeya/Desktop/rpgboss-team3/core/build/resources/main/defaultrc/enumerated.txt")
-    val spriteslist = spritesfile.getLines.toList.filter(a => a.contains("sys/vx"))// && a.endsWith(".png"))
-    spritesfile.close()
-    spriteslist.map(a => println(a))
-
-     */
   }
 
-  val npcButton = new Button() { // new button to generate npc's separately
+  val npcButton = new Button() {
+    var amount = 0
     action = new Action("NPC's"){
       def apply() = {
         val npcCreator = new NPCCreator(getEventId())
-        for(a <- 0 to 25) {
+        for (_ <- 0 to amount) {
           val npcEvent = npcCreator.createEvent()
           drawEvent(npcEvent)
         }
@@ -188,11 +183,12 @@ class MapEditor(
       "hendrik-weiler-theme/tool.png"))
   }
 
-  val chestButton = new Button() { // new button to generate npc's separately
+  val chestButton = new Button() {
+    var amount = 0
     action = new Action("Chests"){
       def apply() = {
         val chestCreator = new TreasureChestCreator(getEventId())
-        for(a <- 0 to 25) {
+        for (_ <- 0 to amount) {
           val chestEvent = chestCreator.createEvent()
           drawEvent(chestEvent)
         }
@@ -202,26 +198,40 @@ class MapEditor(
       "hendrik-weiler-theme/tool.png"))
   }
 
-  val teleporterButton = new Button() { // new button to generate npc's separately
+  val teleporterButton = new Button() {
+    var minDistance = 0
     action = new Action("Teleporters"){
       def apply() = {
         val teleporterCreator = new TeleporterCreator(getEventId())
-        for(a <- 0 to 25) {
-          val teleportersEvent = teleporterCreator.createEvent(20, viewStateOpt.get.mapName)
+       // for (_ <- 0 to 10) {
+          val teleportersEvent = teleporterCreator.createEvent(minDistance, viewStateOpt.get.mapName)
           drawEvent(teleportersEvent)
-        }
+       // }
       }
     }
     icon = new ImageIcon(Utils.readClasspathImage(
       "hendrik-weiler-theme/tool.png"))
   }
 
+  val enemySpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {enemyButton.amount = x; println("Amount of enemies desired: "+x)})
+  val npcSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {npcButton.amount = x; println("Amount of NPC's desired: "+x)})
+  val chestSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {chestButton.amount = x; println("Amount of treasure chests desired: "+x)})
+  val teleporterSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {teleporterButton.minDistance = x; println("Min. distance btwn teleporters desired: "+x)})
+
   toolbar.contents += undoButton
 
-  toolbar.contents += enemyButton //Adding the generate button.
-  toolbar.contents += npcButton // 2nd button for NPC
+  toolbar.contents += enemySpinner
+  toolbar.contents += enemyButton
+
+  toolbar.contents += npcSpinner
+  toolbar.contents += npcButton
+
+  toolbar.contents += chestSpinner
   toolbar.contents += chestButton
+
+  toolbar.contents += teleporterSpinner
   toolbar.contents += teleporterButton
+
 
   toolbar.contents += Swing.HStrut(16)
 
@@ -318,35 +328,6 @@ class MapEditor(
     val vs = viewStateOpt.get
     vs.mapMeta.lastGeneratedEventId
   }
-  /*def generateEventData() = viewStateOpt map { vs =>
-    val eventId = vs.mapMeta.lastGeneratedEventId + 1
-    val x = mapInfo.getXCoordinate() + 0.5f
-    val y = mapInfo.getYCoordinate() + 0.5f
-    Array(vs, eventId, x, y)
-  }*/
-/*
-  /** Creates an event of a certain type (NPC or enemies)
-   *
-   *  @param evType represents the type of the event
-   */
-
-  def createEvent(evType: Int) = viewStateOpt map { vs =>
-    val eventId = vs.mapMeta.lastGeneratedEventId + 1
-    val x = mapInfo.getXCoordinate() + 0.5f
-    val y = mapInfo.getYCoordinate() + 0.5f
-    var event: RpgEvent = null
-  /** added pattern matching, createEvent will create the desired event depending on the value of evType */
-    evType match {
-      /** @DanielB you can add the treasure chest and teleporter calls here  */
-      case 0 => event = RpgEvent.enemyEvent(eventId, x, y)
-      case 1 => event = RpgEvent.npcEvent(eventId, x, y)
-      case _ => throw new Exception("Invalid Event Type")
-    }
-
-    drawEvent(vs, event)
-  }   */
-
-
 
   /** Draws the events on the map
    *
@@ -403,19 +384,8 @@ class MapEditor(
       if (isNewEvent) {
         incrementEventId(vs)
       }
-      vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
-      println("------------------------------\n" +
-              "       CURRENT MAP EVENTS     \n"+
-       "------------------------------\n")
-      vs.nextMapData.events.map(a =>println(a))
-      println("\n event states:\n")
-
-     // e.states map(a => println(a))
-      println("------------------------------ END ------------------------------")
-
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
-      mapInfo.eventAdded(e.x.toInt, e.y.toInt)
     }
 
     def onCancel(e: RpgEvent) =
@@ -451,7 +421,6 @@ class MapEditor(
       repaintRegion(canvasPanel.cursorSquare)
       // Delete the cached selected event id
       selectedEvtId = None
-      mapInfo.elementDeleted(event.x.toInt, event.y.toInt)
     }
   }
 

@@ -505,9 +505,6 @@ case class OpenStore(
   itemIdsSold: IntArrayParameter = IntArrayParameter(),
   buyPriceMultiplier: FloatParameter = FloatParameter(1.0f),
   sellPriceMultiplier: FloatParameter = FloatParameter(0.5f)) extends EventCmd {
-  override def toString: String = {
-    s"OpenStore: slot: $itemIdsSold, BuyPriceMultiplied: $buyPriceMultiplier, sellPriceMultiplied: $sellPriceMultiplier\n "
-  }
   def sections = singleCall("game.openStore", itemIdsSold, buyPriceMultiplier,
     sellPriceMultiplier)
 
@@ -547,18 +544,6 @@ case class PlayAnimation(
   var yOffset: Int = 0,
   var speedScale: Float = 1.0f,
   var sizeScale: Float = 1.0f) extends EventCmd {
-
-  override def toString: String = {
-    "--------------- play animation ----------------\n"+
-    s"anim ID: $animationId\n" +
-      s"originID: $originId\n" +
-      s"entitySpec: $entitySpec\n" +
-      s"xOffset: $xOffset\n" +
-      s"yOffset: $yOffset\n" +
-      s"speedScale: $speedScale\n" +
-      s"sizeScale: $sizeScale\n"
-  }
-  def print(): Unit = println(this)
   def sections = Origins(originId) match {
     case Origins.SCREEN_TOP_LEFT =>
       singleCall("game.playAnimation", animationId, xOffset, yOffset,
@@ -758,8 +743,6 @@ case class StartBattle(
   extends EventCmd {
   def sections = singleCall("game.startBattle", encounterId)
   override def getParameters() = List(encounterId)
-
-  override def toString: String = s"Start Battle: $encounterId"
 }
 
 case class StopMusic(
