@@ -1,5 +1,8 @@
 package rpgboss.model.resource
 
+import rpgboss.model.resource.random_map_generation.{Container, Room}
+import rpgboss.model.resource.random_map_generation.btree.Btree
+
 /** Contains the representation of the rooms (2D-arrays) and methods to interact with these
  *
  * This object contains a 2D-array representation for each room, and methods

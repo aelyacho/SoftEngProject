@@ -3,10 +3,11 @@ package core.rpgboss.model.event.creators
 import core.UnitSpec
 import rpgboss.model.event.Teleport
 import rpgboss.model.event.creators.TeleporterCreator
+import rpgboss.model.resource.random_map_generation.MapGenerator
 import rpgboss.model.resource.{RpgMap, mapInfo}
 
 class TeleporterCreatorSpec extends UnitSpec{
-  val btree = RpgMap.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, RpgMap.ITER)
+  val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
   mapInfo.createRepr(btree)
   val creator = new TeleporterCreator(0)
   val teleporters = creator.createEvent(20, "test")

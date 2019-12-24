@@ -4,9 +4,10 @@ import core.UnitSpec
 import rpgboss.model.resource.{RpgMap, mapInfo}
 import rpgboss.model.event.{AddRemoveGold, ShowText}
 import rpgboss.model.event.creators.TreasureChestCreator
+import rpgboss.model.resource.random_map_generation.MapGenerator
 
 class TreasureChestCreatorSpec extends UnitSpec {
-  val btree = RpgMap.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, RpgMap.ITER)
+  val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
   mapInfo.createRepr(btree)
   val creator = new TreasureChestCreator(0)
   val chest = creator.createEvent()(0)

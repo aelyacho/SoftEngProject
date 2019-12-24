@@ -1,5 +1,6 @@
 package rpgboss.model.resource.random_map_generation
 
+import rpgboss.model.resource.mapInfo
 import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode, Node}
 
 /**   MapGenerator:   Object that handles the random map generation
@@ -77,7 +78,7 @@ object MapGenerator {
    */
 
   def generateTree(width :Int, height :Int, iter: Int) ={
-    def splitContainer(c: Container, iter: Int): Node[Container] ={
+    def splitContainer(c: Container, iter: Int): Btree[Container] ={
       if(iter == 0) new Node[Container](c, EmptyNode, EmptyNode)
       else {
         val sr = c.randomSplit
@@ -121,5 +122,6 @@ object MapGenerator {
   def generateMap(width :Int, height :Int, iter: Int, a: Array[Array[Byte]], floorTile: Array[Byte], wallTile: Array[Byte]) ={
     val tree = generateTree(width, height, iter)
     drawTree(a, tree, floorTile, wallTile)
+    tree
   }
 }

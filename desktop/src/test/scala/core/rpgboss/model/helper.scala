@@ -1,6 +1,6 @@
 package core.rpgboss.model
 
-import rpgboss.model.resource.Room
+import rpgboss.model.resource.random_map_generation.Room
 
 import scala.util.control.Breaks.{break, breakable}
 

@@ -155,7 +155,8 @@ object RpgMap extends MetaResource[RpgMap, RpgMapMetadata] {
       val row = makeRowArray(xSize, autotileSeed)
       val x = Array.fill(ySize)(row.clone())
 
-      MapGenerator.generateMap(xSize, ySize, iter, x, floorTile, wallTile)
+      val tree = MapGenerator.generateMap(xSize, ySize, iter, x, floorTile, wallTile)
+      mapInfo.createRepr(tree)
       x
     }
     def emptyLayer() = {

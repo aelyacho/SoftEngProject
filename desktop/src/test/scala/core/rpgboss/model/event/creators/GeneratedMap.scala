@@ -1,10 +1,12 @@
 package core.rpgboss.model.event.creators
 
-import rpgboss.model.resource.{Container, Node, RpgMap, mapInfo}
+import rpgboss.model.resource.random_map_generation.{Container, MapGenerator}
+import rpgboss.model.resource.random_map_generation.btree.Node
+import rpgboss.model.resource.{RpgMap, mapInfo}
 /** trait used to simulate a map during the tests */
 trait GeneratedMap {
 
-  val btree: Node[Container] = RpgMap.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, RpgMap.ITER)
+  val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
   mapInfo.createRepr(btree)
 
 }

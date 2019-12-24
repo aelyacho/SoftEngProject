@@ -1,10 +1,11 @@
 package core.rpgboss.model
 
 import core.UnitSpec
+import rpgboss.model.resource.random_map_generation.MapGenerator
 import rpgboss.model.resource.{RpgMap, mapInfo}
 
 class mapInfoSpec extends UnitSpec {
-  val btree = RpgMap.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, RpgMap.ITER)
+  val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
   mapInfo.createRepr(btree)
   val allRooms = mapInfo.rooms
   var x = mapInfo.getXCoordinate()

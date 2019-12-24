@@ -19,4 +19,6 @@ class Room(c: Container) {
   w = w - MapGeneratorConstants.randomizer.nextInt(max_hDistance)
   h = h - MapGeneratorConstants.randomizer.nextInt(max_vDistance)
 
+  var representation = Array(Array(0))
+
 }
