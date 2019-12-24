@@ -15,11 +15,12 @@ import java.awt.AlphaComposite
 class TilesetTileSelector(
   tilesetIndex: Byte,
   tileset: Tileset,
-  selectBytesF: Array[Array[Array[Byte]]] => Unit)
+  selectBytesF: Array[Array[Array[Byte]]] => Unit,
+  allowMultiselect : Boolean = true)//Added
   extends BoxPanel(Orientation.Vertical) with TileBytesSelector {
 
   val imgTileSelector: ImageTileSelector = new ImageTileSelector(tileset.img,
-    Tileset.tilesize, Tileset.tilesize, 8, true, true, None) {
+    Tileset.tilesize, Tileset.tilesize, 8, allowMultiselect, true, None) {//Added
     def selectTileF(button: Int, tiles: Array[Array[(Int, Int)]]) = {
       selectBytesF(selectionBytes)
     }
