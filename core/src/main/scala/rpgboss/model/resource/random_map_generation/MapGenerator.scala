@@ -7,28 +7,39 @@ import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode, Nod
 
 object MapGenerator {
 
+  def inBound(x: Int, y: Int, w: Int, h: Int)={
+    0<=x && x<=w && 0<=y && y<=h
+  }
+
   /** drawLine:   Draws a line in the array (a) from (x1, y1) to (x2, y2)
    *
    * @param a       2d array that represents the map
    * @param tile    tile used in the drawing [array of 3 elements (type, xTile, yTile)]
    */
   def drawLine(a: Array[Array[Byte]], tile: Array[Byte], x1: Int, y1: Int, x2: Int, y2: Int): Unit ={
-    if(y1==y2){//Horizontal
-      var c = x1
-      while(c<x2) {
-        a(y1)(c*3) = tile(0)
-        a(y1)(c*3+1) = tile(1)
-        a(y1)(c*3+2) = tile(2)
-        c = c + 1
-      }
+    val width = a(0).length/3 // Divided by 3, because its an array of tile tuples(3 bytes representing one tile)
+    val height = a.length
+    if(!(inBound(x1, y1, width, height)&&inBound(x2, y2, width, height))){
+      throw new Exception("Out of bounds")
     }
-    else if(x1==x2){//Vertical
-      var c = y1
-      while(c<y2) {
-        a(c)(x1*3) = tile(0)
-        a(c)(x1*3+1) = tile(1)
-        a(c)(x1*3+2) = tile(2)
-        c = c + 1
+    else{
+      if(y1==y2){//Horizontal
+        var c = x1
+        while(c<=x2) {
+          a(y1)(c*3) = tile(0)
+          a(y1)(c*3+1) = tile(1)
+          a(y1)(c*3+2) = tile(2)
+          c = c + 1
+        }
+      }
+      else if(x1==x2){//Vertical
+        var c = y1
+        while(c<=y2) {
+          a(c)(x1*3) = tile(0)
+          a(c)(x1*3+1) = tile(1)
+          a(c)(x1*3+2) = tile(2)
+          c = c + 1
+        }
       }
     }
   }
@@ -44,15 +55,15 @@ object MapGenerator {
     if(fill){
       var ctr = 0
       while(ctr<h){
-        drawLine(a, tile, x, y+ctr, x+w, y+ctr)
+        drawLine(a, tile, x, y+ctr, x+w-1, y+ctr)
         ctr = ctr + 1
       }
     }
     else {
-      drawLine(a, tile, x, y, x + w, y)
-      drawLine(a, tile, x + w, y, x + w, y + h)
-      drawLine(a, tile, x, y + h, x + w +1, y + h) //+1 to fill bottom right corner
-      drawLine(a, tile, x, y, x, y + h)
+      drawLine(a, tile, x, y, x+w-1, y)
+      drawLine(a, tile, x+w-1, y, x+w-1, y+h-1)
+      drawLine(a, tile, x, y+h-1, x+w-1, y+h-1) //+1 to fill bottom right corner
+      drawLine(a, tile, x, y, x, y+h-1)
     }
   }
 

@@ -41,7 +41,13 @@ class MapGeneratorSpec extends UnitSpec{
     testGenerateTree(15, 18, 2)
     testGenerateTree(20, 20, 3)
     testGenerateTree(45, 60, 4)
-    testGenerateTree(67, 89, 5)
+    testGenerateTree(67, 89, 6)
+    testGenerateTree(36, 32, 0)
+
+    /** Too many iterations given for a small map surface
+     */
+    a [Exception] should be thrownBy(MapGenerator.generateTree(20, 20, 10))
+    a [Exception] should be thrownBy(MapGenerator.generateTree(35, 25, 8))
   }
 
   /** make2dTileArray:  makes a 2d array of 'tiles' (dummy map)
@@ -64,8 +70,10 @@ class MapGeneratorSpec extends UnitSpec{
   }
 
   "drawLine" should "draw a line on the map" in {
+    // A dummy tile
     val testTile = Array[Byte](3, 1, 1)
-    val f1 = drawLineFixture(3, 3, testTile, 0, 1, 3, 1)
+
+    val f1 = drawLineFixture(3, 3, testTile, 0, 1, 2, 1)
     val expectedResult1 =
       Array(
         Array[Byte](0, 0, 0,  0, 0, 0,  0, 0, 0),
@@ -74,7 +82,7 @@ class MapGeneratorSpec extends UnitSpec{
       )
     f1.a should equal (expectedResult1)
 
-    val f2 = drawLineFixture(3, 3, testTile, 0, 0, 0, 3)
+    val f2 = drawLineFixture(3, 3, testTile, 0, 0, 0, 2)
     val expectedResult2 =
       Array(
         Array[Byte](3, 1, 1,  0, 0, 0,  0, 0, 0),
@@ -82,12 +90,46 @@ class MapGeneratorSpec extends UnitSpec{
         Array[Byte](3, 1, 1,  0, 0, 0,  0, 0, 0)
       )
     f2.a should equal (expectedResult2)
+
+    /** Out of bounds tests
+     */
+    a [Exception] should be thrownBy(drawLineFixture(4, 4, testTile, 0, 3, 5, 3))
+    a [Exception] should be thrownBy(drawLineFixture(8, 10, testTile, 4, 5, 4, 12))
   }
 
-  "drawSquare" should "draw a square on the map" in {
-    /**
-     *  drawSquare is based on on the drawLine method
+  def drawRectFixture(w: Int, h: Int, tile: Array[Byte], x1: Int, y1: Int, rw: Int, rh: Int, fill: Boolean) = new {
+    val a = make2dTileArray(w, h)
+    MapGenerator.drawRect(a, tile, x1, y1, rw, rh, fill)
+  }
+
+  "drawRect" should "draw a rect on the map" in {
+    // A dummy tile
+    val testTile = Array[Byte](3, 1, 1)
+
+    val f1 = drawRectFixture(4, 4, testTile, 0, 0, 3, 3, false)
+    val expectedResult1 =
+      Array(
+        Array[Byte](3, 1, 1,  3, 1, 1,  3, 1, 1,  0, 0, 0),
+        Array[Byte](3, 1, 1,  0, 0, 0,  3, 1, 1,  0, 0, 0),
+        Array[Byte](3, 1, 1,  3, 1, 1,  3, 1, 1,  0, 0, 0),
+        Array[Byte](0, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0)
+      )
+    f1.a should equal (expectedResult1)
+
+    val f2 = drawRectFixture(4, 4, testTile, 1, 1, 3, 3, true)
+    val expectedResult2 =
+      Array(
+        Array[Byte](0, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0),
+        Array[Byte](0, 0, 0,  3, 1, 1,  3, 1, 1,  3, 1, 1),
+        Array[Byte](0, 0, 0,  3, 1, 1,  3, 1, 1,  3, 1, 1),
+        Array[Byte](0, 0, 0,  3, 1, 1,  3, 1, 1,  3, 1, 1)
+      )
+    f2.a should equal (expectedResult2)
+
+    /** Out of bounds tests
      */
+    a [Exception] should be thrownBy(drawRectFixture(4, 4, testTile, 3, 3, 5, 5, true))
+    a [Exception] should be thrownBy(drawRectFixture(5, 10, testTile, 4, 5, 2, 10, false))
   }
 
   "drawTree" should "draw the tree on the map" in {

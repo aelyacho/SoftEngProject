@@ -15,6 +15,8 @@ import rpgboss.editor.imageset.metadata.TilesetsMetadataPanel
 import rpgboss.editor.imageset.selector.TabbedTileSelector
 import rpgboss.editor.uibase.SwingUtils.boolField
 import rpgboss.lib.Utils
+import rpgboss.model.resource.random_map_generation.MapGeneratorConstants
+
 import scala.math._
 
 class MapPropertiesDialog(
@@ -92,13 +94,9 @@ class MapPropertiesDialog(
       model.random = bool
     }) //Added option in user interface for random map generation
 
-  val minRoomSize = 150 // The minimum average room size
-  val mapHeight = fHeight.getValue
-  val mapWidth = fWidth.getValue
-  val maxIter: Int = round(log(mapHeight*mapWidth/minRoomSize)/log(2)).toInt
 
   val iter = new NumberSpinner( //Added adjustable iter for Random map generation
-    1, maxIter,
+    1, MapGeneratorConstants.MAX_ITER,
     model.iter,
     model.iter = _)
 

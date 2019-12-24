@@ -16,4 +16,13 @@ object MapGeneratorConstants {
   /** MIN_CONT_DIMENSION is the minimum dimension a container can have (width>MIN_CONT_DIMENSION && height>MIN_CONT_DIMENSION)
    */
   val MIN_CONT_DIMENSION = 3
+
+
+  /** MAX_SPLIT_TRIES is the maximum amount of tries to randomly split a container, before an exception gets raised
+   */
+  val MAX_SPLIT_TRIES = 100
+
+  /** MAX_ITER is the maximum amount of iterations that can be selected
+   */
+  val MAX_ITER = 10
 }
