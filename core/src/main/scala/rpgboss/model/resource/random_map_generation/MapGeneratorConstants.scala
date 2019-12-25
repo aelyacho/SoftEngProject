@@ -31,7 +31,7 @@ object MapGeneratorConstants {
 
   /** MAX_SPLIT_TRIES is the maximum amount of tries to randomly split a container, before an exception gets raised
    */
-  val MAX_SPLIT_TRIES = 100
+  val MAX_SPLIT_TRIES = 300
 
   /** MAX_ITER is the maximum amount of iterations that can be selected
    */

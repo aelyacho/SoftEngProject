@@ -4,7 +4,7 @@ import rpgboss.editor.UnitSpec
 import rpgboss.model.resource.random_map_generation.{Container, MapGenerator}
 import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode}
 
-class MapGeneratorSpec extends UnitSpec{
+class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
   def generateTreeFixture(w: Int, h: Int, i: Int) = new {
     val width = w
     val height = h
@@ -48,17 +48,6 @@ class MapGeneratorSpec extends UnitSpec{
      */
     a [Exception] should be thrownBy(MapGenerator.generateTree(20, 20, 10))
     a [Exception] should be thrownBy(MapGenerator.generateTree(35, 25, 8))
-  }
-
-  /** make2dTileArray:  makes a 2d array of 'tiles' (dummy map)
-   * @param w  desired width
-   * @param h   desired height
-   * @return    A 2d array width dimensions (w*3, h) containing Bytes(0)
-   */
-  def make2dTileArray(w: Int, h: Int) = {
-    val rowArray = Array.tabulate(w*3)((n) => 0.toByte)
-    val array = Array.fill(h)(rowArray.clone())
-    array
   }
 
   /**
