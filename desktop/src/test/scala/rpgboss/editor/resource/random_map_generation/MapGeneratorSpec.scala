@@ -41,7 +41,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
     testGenerateTree(15, 18, 2)
     testGenerateTree(20, 20, 3)
     testGenerateTree(45, 60, 4)
-    testGenerateTree(67, 89, 6)
+    testGenerateTree(67, 89, 5)
     testGenerateTree(36, 32, 0)
 
     /** Too many iterations given for a small map surface

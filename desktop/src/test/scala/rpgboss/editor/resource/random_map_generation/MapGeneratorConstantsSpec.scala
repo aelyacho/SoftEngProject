@@ -5,7 +5,7 @@ import rpgboss.model.resource.random_map_generation.{MapGenerator, MapGeneratorC
 
 class MapGeneratorConstantsSpec extends UnitSpec with TileArrayMaker {
 
-  "For the same seed, the generated btrees" should "be the same" in {
+  "For the same seed, the generated maps" should "be the same" in {
 
     /** testSeed tests whether or not if 3 maps are generated with the same seed, they are all the same.
      *
