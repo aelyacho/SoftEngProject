@@ -1,6 +1,4 @@
 package rpgboss.model.resource.random_map_generation
-
-import rpgboss.model.resource.mapInfo
 import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode, Node}
 
 /**   MapGenerator:   Object that handles the random map generation

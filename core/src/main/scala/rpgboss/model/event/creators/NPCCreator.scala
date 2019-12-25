@@ -4,14 +4,16 @@ import rpgboss.model.SpriteSpec
 import rpgboss.model.event.{AnimationType, EventCmd, IntArrayParameter, OpenStore, RpgEvent, RpgEventState, ShowText}
 import rpgboss.model.resource.mapInfo
 
+import scala.io.Source
+
 class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
   private val npcAnimation = List(AnimationType.NONE.id, AnimationType.RANDOM_MOVEMENT.id)
   private val storeItems = Randomizer.getRandomVal(32)
   private def startRange: Int = if ((storeItems-12)>=0) storeItems-12 else 0
 
   /** quotes fetched from https://gist.github.com/signed0/d70780518341e1396e11 */
-  private val quotesFile = getClass.getResourceAsStream("/quotes.txt")
-  private val quotes = scala.io.Source.fromInputStream(quotesFile).getLines().toArray
+  private val quotesFile = scala.io.Source.getClass.getResourceAsStream("/quotes.txt")
+  private val quotes = scala.io.Source.fromInputStream(quotesFile, enc="UTF-8").getLines.toArray
 
   /** @return a Random action (Open a store or show a random quote) depending on the evtype value which is a random value between 0 and 1 */
   private def getRandomAction(evType: Int): Array[EventCmd] = {

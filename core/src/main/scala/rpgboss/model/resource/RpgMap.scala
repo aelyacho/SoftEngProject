@@ -8,8 +8,7 @@ import scala.collection.JavaConversions._
 import java.io._
 import java.util.Arrays
 import org.json4s.DefaultFormats
-import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode, Node}
-import rpgboss.model.resource.random_map_generation.{Container, MapGenerator}
+import rpgboss.model.resource.random_map_generation.MapGenerator
 
 import scala.collection.mutable.ArrayBuffer
 
