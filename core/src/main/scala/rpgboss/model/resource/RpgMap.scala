@@ -23,6 +23,8 @@ case class RpgMapMetadata(var parent: String,
                           var interior:Boolean = false,
                           var random:Boolean = false,//Boolean used to start the random map generation process
                           var iter:Int = 3,//Amount of iterations for the random map generation algorithm
+                          var setSeed:Boolean = false,// Boolean that shows whether or not the seed is configured by the user
+                          var seed:Int = 0,// The seed of the randomizer
                           var music: Option[SoundSpec] = None,
                           var battleBackground: String =
                             ResourceConstants.defaultBattleback,

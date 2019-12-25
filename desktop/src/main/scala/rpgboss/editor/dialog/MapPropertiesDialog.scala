@@ -37,6 +37,11 @@ class MapPropertiesDialog(
 
     val newMapData = {
       if(model.random){//Added for random map generation (if random boolean is true, get random map data instead of the default data)
+        if(model.setSeed){
+          MapGeneratorConstants.setSeed(model.seed)
+        }else{
+          MapGeneratorConstants.resetSeed
+        }
         RpgMap.randomMapData(model.xSize, model.ySize, model.iter, floorTile, wallTile)
       }else {
         if (model.xSize == initialMap.metadata.xSize &&
@@ -170,8 +175,26 @@ class MapPropertiesDialog(
   floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
 
-  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn)//A list of all the components of the random generation GUI
+  //Checkbox for enabling seeding
+  val setSeed = boolField(
+    "Set seed",
+    model.setSeed,
+    (bool:Boolean)=>{
+      model.setSeed = bool
+      seed.visible_=(bool)// Enable/Disable seed spinner
+    })
+
+  // NumberSpinner for the seed value
+  val seed = new NumberSpinner(
+    MapGeneratorConstants.MIN_SEED, MapGeneratorConstants.MAX_SEED,
+    model.seed,
+    model.seed = _
+  )
+
+  // A list of all the components of the random generation GUI
+  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn, setSeed, seed)
   randomGuiComponentsList.foreach((x)=> x.enabled_=(model.random))// Initialise components' enabled_
+  seed.visible_=(model.setSeed) // Initialise seed NumberSpinner visible_
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
@@ -205,6 +228,8 @@ class MapPropertiesDialog(
         row().grid(lbl("Iterations: ")).add(iter)
         row().grid(lbl("Floor Tile: ")).add(floorTileSelectionBtn)
         row().grid(lbl("Wall Tile: ")).add(wallTileSelectionBtn)
+        row().grid().add(setSeed)
+        row().grid().add(seed)
       }
 
       contents += fRandomEncounters
