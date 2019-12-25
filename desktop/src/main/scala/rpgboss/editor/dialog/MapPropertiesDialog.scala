@@ -146,6 +146,11 @@ class MapPropertiesDialog(
   val floorTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setFloorTile, true), onFloorSelection)
   val wallTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setWallTile, false), onWallSelection)
 
+  val eventGenConfiguration = new EventGenConfigDialog(owner, sm)
+
+  val eventConfigButton: Button = Button("Event generation"){
+    eventGenConfiguration.open()
+  }
 
   val floorTileSelectionBtn : Button = Button("") {
     floorTileSelector.open()
@@ -170,7 +175,7 @@ class MapPropertiesDialog(
   floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
 
-  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn)//A list of all the components of the random generation GUI
+  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn, eventConfigButton)//A list of all the components of the random generation GUI
   randomGuiComponentsList.foreach((x)=> x.enabled_=(model.random))// Initialise components' enabled_
 
   contents = new BoxPanel(Orientation.Vertical) {
@@ -205,6 +210,7 @@ class MapPropertiesDialog(
         row().grid(lbl("Iterations: ")).add(iter)
         row().grid(lbl("Floor Tile: ")).add(floorTileSelectionBtn)
         row().grid(lbl("Wall Tile: ")).add(wallTileSelectionBtn)
+        row().grid().add(eventConfigButton)
       }
 
       contents += fRandomEncounters
