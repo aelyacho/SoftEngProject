@@ -1,23 +1,18 @@
 package rpgboss.editor.dialog
 
 import javax.swing.ImageIcon
+import rpgboss.editor.Internationalized._
+import rpgboss.editor.StateMaster
+import rpgboss.editor.cache.MapTileCache
+import rpgboss.editor.misc.RandomEncounterSettingsPanel
+import rpgboss.editor.resourceselector.{BattleBackgroundField, MusicField, TilesetArrayField}
+import rpgboss.editor.uibase.SwingUtils.{boolField, _}
+import rpgboss.editor.uibase._
 import rpgboss.model._
 import rpgboss.model.resource._
-import scala.swing._
-import rpgboss.editor.uibase._
-import rpgboss.editor.uibase.SwingUtils._
-import rpgboss.editor.StateMaster
-import rpgboss.editor.resourceselector.{BattleBackgroundField, MusicField, SpriteField, TilesetArrayField}
-import rpgboss.editor.misc.RandomEncounterSettingsPanel
-import rpgboss.editor.Internationalized._
-import rpgboss.editor.cache.MapTileCache
-import rpgboss.editor.imageset.metadata.TilesetsMetadataPanel
-import rpgboss.editor.imageset.selector.TabbedTileSelector
-import rpgboss.editor.uibase.SwingUtils.boolField
-import rpgboss.lib.Utils
 import rpgboss.model.resource.random_map_generation.MapGeneratorConstants
 
-import scala.math._
+import scala.swing._
 
 class MapPropertiesDialog(
                            owner: Window,
@@ -90,7 +85,7 @@ class MapPropertiesDialog(
     "Random Map Generation",
     model.random,
     (bool:Boolean)=>{
-      randomGuiComponentsList.foreach((x)=> x.enabled_=(bool))// Enable/Disable random GUI components
+      randomGuiComponentsList.foreach(x=> x.enabled_=(bool))// Enable/Disable random GUI components
       model.random = bool
     }) //Added option in user interface for random map generation
 
@@ -146,12 +141,6 @@ class MapPropertiesDialog(
   val floorTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setFloorTile, true), onFloorSelection)
   val wallTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setWallTile, false), onWallSelection)
 
-  val eventGenConfiguration = new EventGenConfigDialog(owner, sm)
-
-  val eventConfigButton: Button = Button("Event generation"){
-    eventGenConfiguration.open()
-  }
-
   val floorTileSelectionBtn : Button = Button("") {
     floorTileSelector.open()
   }
@@ -175,8 +164,8 @@ class MapPropertiesDialog(
   floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
 
-  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn, eventConfigButton)//A list of all the components of the random generation GUI
-  randomGuiComponentsList.foreach((x)=> x.enabled_=(model.random))// Initialise components' enabled_
+  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn)//A list of all the components of the random generation GUI
+  randomGuiComponentsList.foreach(x=> x.enabled_=(model.random))// Initialise components' enabled_
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
@@ -210,7 +199,6 @@ class MapPropertiesDialog(
         row().grid(lbl("Iterations: ")).add(iter)
         row().grid(lbl("Floor Tile: ")).add(floorTileSelectionBtn)
         row().grid(lbl("Wall Tile: ")).add(wallTileSelectionBtn)
-        row().grid().add(eventConfigButton)
       }
 
       contents += fRandomEncounters

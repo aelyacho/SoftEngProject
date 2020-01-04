@@ -34,6 +34,9 @@ object mapInfo {
   /**Y-coordinate in the chosen room*/
   private var currentY = -1
 
+  /** boolean that shows if the random map generation has been enabled */
+  var randomEnabled = false
+
   /**Defining the semantic of the values found in the representations of the rooms*/
   object mapElement extends Enumeration {
     val FREE = 0
@@ -116,6 +119,7 @@ object mapInfo {
       val roomRepr = Array.ofDim[Int](roomHeight, roomWidth)
       room.representation = roomRepr
     })
+    randomEnabled = true
   }
 
   /**Generates a random x-coordinate in a random room
