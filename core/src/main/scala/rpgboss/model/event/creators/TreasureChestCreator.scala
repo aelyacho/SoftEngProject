@@ -3,10 +3,10 @@ package rpgboss.model.event.creators
 import rpgboss.model.SpriteSpec
 import rpgboss.model.event.{AddRemoveGold, IntParameter, RpgEvent, RpgEventState, ShowText}
 import rpgboss.model.resource.mapInfo
-
+import math._
 class TreasureChestCreator(eventId:Int) extends RpgEventCreator(eventId) {
-  def createEvent(): Array[RpgEvent] = {
-    val amountOfGold = Randomizer.getRandomVal(300) + 1
+  def createEvent(args:Array[Any] = Array()): Array[RpgEvent] = {
+    val amountOfGold = Randomizer.getRandomVal(300)
 
     val closedState = RpgEventState()
     closedState.sprite = Some(SpriteSpec("sys/!$chest-opengameart-Blarumyrran.png",0,0,0))

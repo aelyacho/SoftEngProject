@@ -6,7 +6,7 @@ import rpgboss.model.resource.mapInfo
 
 class EnemyCreator (eventId:Int) extends RpgEventCreator(eventId) {
     private val enemyAnimation = List(AnimationType.FOLLOW_PLAYER.id, AnimationType.RANDOM_MOVEMENT.id)
-    def createEvent(): Array[RpgEvent] = {
+    def createEvent(args:Array[Any] = Array()): Array[RpgEvent] = {
       val state = RpgEventState()
       val x = mapInfo.getXCoordinate() + 0.5f
       val y = mapInfo.getYCoordinate() + 0.5f

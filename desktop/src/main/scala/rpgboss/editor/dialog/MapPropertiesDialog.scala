@@ -1,23 +1,18 @@
 package rpgboss.editor.dialog
 
 import javax.swing.ImageIcon
+import rpgboss.editor.Internationalized._
+import rpgboss.editor.StateMaster
+import rpgboss.editor.cache.MapTileCache
+import rpgboss.editor.misc.RandomEncounterSettingsPanel
+import rpgboss.editor.resourceselector.{BattleBackgroundField, MusicField, TilesetArrayField}
+import rpgboss.editor.uibase.SwingUtils.{boolField, _}
+import rpgboss.editor.uibase._
 import rpgboss.model._
 import rpgboss.model.resource._
-import scala.swing._
-import rpgboss.editor.uibase._
-import rpgboss.editor.uibase.SwingUtils._
-import rpgboss.editor.StateMaster
-import rpgboss.editor.resourceselector.{BattleBackgroundField, MusicField, SpriteField, TilesetArrayField}
-import rpgboss.editor.misc.RandomEncounterSettingsPanel
-import rpgboss.editor.Internationalized._
-import rpgboss.editor.cache.MapTileCache
-import rpgboss.editor.imageset.metadata.TilesetsMetadataPanel
-import rpgboss.editor.imageset.selector.TabbedTileSelector
-import rpgboss.editor.uibase.SwingUtils.boolField
-import rpgboss.lib.Utils
 import rpgboss.model.resource.random_map_generation.MapGeneratorConstants
 
-import scala.math._
+import scala.swing._
 
 class MapPropertiesDialog(
                            owner: Window,
@@ -37,11 +32,6 @@ class MapPropertiesDialog(
 
     val newMapData = {
       if(model.random){//Added for random map generation (if random boolean is true, get random map data instead of the default data)
-        if(model.setSeed){ // if a seed is given, set the seed
-          MapGeneratorConstants.setSeed(model.seed)
-        }else{ // if no seed is given, reset the seed
-          MapGeneratorConstants.resetSeed
-        }
         RpgMap.randomMapData(model.xSize, model.ySize, model.iter, floorTile, wallTile)
       }else {
         if (model.xSize == initialMap.metadata.xSize &&
@@ -95,7 +85,7 @@ class MapPropertiesDialog(
     "Random Map Generation",
     model.random,
     (bool:Boolean)=>{
-      randomGuiComponentsList.foreach((x)=> x.enabled_=(bool))// Enable/Disable random GUI components
+      randomGuiComponentsList.foreach(x=> x.enabled_=(bool))// Enable/Disable random GUI components
       model.random = bool
     }) //Added option in user interface for random map generation
 
@@ -105,26 +95,18 @@ class MapPropertiesDialog(
     model.iter,
     model.iter = _)
 
-  var floorTile : Array[Byte] = RpgMap.initFloorTile
-  var wallTile : Array[Byte] = RpgMap.initWallTile
+  var floorTile : Array[Byte] = RpgMap.initFloorTile//Added
+  var wallTile : Array[Byte] = RpgMap.initWallTile//Added
 
   val autotiles = Autotile.list(sm.getProj).map(Autotile.readFromDisk(sm.getProj, _))
   val tilesets = Tileset.list(sm.getProj).map(Tileset.readFromDisk(sm.getProj, _))
 
-
-  /** Function used to set a tile
-   *
-   * @param newTile  : The new tile
-   * @param setTile  : The tile 'setter'
-   * @param canPass  : The accepted passability
-   */
   def changeTile(newTile: Array[Byte], setTile: (Array[Byte]) => Unit, canPass: Boolean): Unit ={
     if(canPass == isPassable(newTile)) {
       setTile(newTile)
     }
   }
 
-  /** Gives back whether or not a tile is passable or not */
   def isPassable(tile: Array[Byte]): Boolean ={
     val typ = tile(0)
     val x = tile(1)
@@ -140,7 +122,6 @@ class MapPropertiesDialog(
     passability == 0
   }
 
-  /** This handles the label that shows whether or not the selected tile is allowed (triggered each time a tile is pressed) */
   def onFloorSelection(s: Array[Array[Array[Byte]]]): Unit = {
     if(isPassable(s(0)(0))){
       floorTileSelector.canSelectLabel.text_=("YES")
@@ -148,7 +129,7 @@ class MapPropertiesDialog(
       floorTileSelector.canSelectLabel.text_=("NO")
     }
   }
-  /** This handles the label that shows whether or not the selected tile is allowed (triggered each time a tile is pressed) */
+
   def onWallSelection(s: Array[Array[Array[Byte]]]): Unit = {
     if(isPassable(s(0)(0))){
       wallTileSelector.canSelectLabel.text_=("NO")
@@ -157,12 +138,9 @@ class MapPropertiesDialog(
     }
   }
 
-  /**  changeTile is called onOk, if the passability of the new tile matches the allowed passability, the tile is set */
   val floorTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setFloorTile, true), onFloorSelection)
   val wallTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setWallTile, false), onWallSelection)
 
-
-  /** Buttons that trigger the tileSelectionDialog */
   val floorTileSelectionBtn : Button = Button("") {
     floorTileSelector.open()
   }
@@ -171,10 +149,8 @@ class MapPropertiesDialog(
     wallTileSelector.open()
   }
 
-
   def setFloorTile(newTile: Array[Byte]) = {
     floorTile = newTile
-    /** Updating the icon of the tileSelectionBtn */
     floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   }
 
@@ -185,30 +161,11 @@ class MapPropertiesDialog(
 
   val tileCache = new MapTileCache(sm.assetCache, initialMap)
 
-  /** Setting the icons of the buttons to the icons of the currently selected tiles */
   floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
 
-  //Checkbox for enabling seeding
-  val setSeed = boolField(
-    "Set seed",
-    model.setSeed,
-    (bool:Boolean)=>{
-      model.setSeed = bool
-      seed.visible_=(bool)// Enable/Disable seed spinner
-    })
-
-  // NumberSpinner for the seed value
-  val seed = new NumberSpinner(
-    MapGeneratorConstants.MIN_SEED, MapGeneratorConstants.MAX_SEED,
-    model.seed,
-    model.seed = _
-  )
-
-  // A list of all the components of the random generation GUI
-  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn, setSeed, seed)
-  randomGuiComponentsList.foreach((x)=> x.enabled_=(model.random))// Initialise components' enabled_
-  seed.visible_=(model.setSeed) // Initialise seed NumberSpinner visible_
+  val randomGuiComponentsList = List(iter, floorTileSelectionBtn, wallTileSelectionBtn)//A list of all the components of the random generation GUI
+  randomGuiComponentsList.foreach(x=> x.enabled_=(model.random))// Initialise components' enabled_
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += new BoxPanel(Orientation.Horizontal) {
@@ -242,8 +199,6 @@ class MapPropertiesDialog(
         row().grid(lbl("Iterations: ")).add(iter)
         row().grid(lbl("Floor Tile: ")).add(floorTileSelectionBtn)
         row().grid(lbl("Wall Tile: ")).add(wallTileSelectionBtn)
-        row().grid().add(setSeed)
-        row().grid().add(seed)
       }
 
       contents += fRandomEncounters

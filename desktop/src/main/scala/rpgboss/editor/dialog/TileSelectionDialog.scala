@@ -24,7 +24,7 @@ class TileSelectionDialog(owner: Window, sm: StateMaster, onOk: Array[Byte] => A
 
   val initialMap = {
     val mapStates = sm.getMapStates
-    if (!mapStates.isEmpty) {
+    if (mapStates.nonEmpty) {
       val idToLoad =
         if (mapStates.contains(sm.getProj.data.recentMapName))
           sm.getProj.data.recentMapName

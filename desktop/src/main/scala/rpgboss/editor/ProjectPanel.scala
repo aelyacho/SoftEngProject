@@ -1,22 +1,20 @@
 package rpgboss.editor
 
-import java.awt.Toolkit
+import java.awt.{Desktop, Toolkit}
 import java.io._
-import java.util.Scanner
-import java.awt.Desktop
 import java.net.URL
-import scala.collection.JavaConversions._
-import scala.swing.{Point=>SwingPoint, _}
+import java.util.Scanner
+
 import javax.swing.ImageIcon
 import rpgboss.editor.Internationalized._
-import rpgboss.editor.dialog.ExportDialog
 import rpgboss.editor.imageset.selector._
 import rpgboss.editor.misc._
 import rpgboss.lib._
-import rpgboss.model._
-import rpgboss.model.resource._
 import rpgboss.model.event.RpgEvent
-import scalaj.http.Http
+import rpgboss.model.resource._
+
+import scala.collection.JavaConversions._
+import scala.swing.{Point => SwingPoint, _}
 
 /**
  * Main panel for the editor of a project
@@ -34,7 +32,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   window.resizable = true
   window.location = new SwingPoint(0,0)
 
-  val screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+  val screenSize = Toolkit.getDefaultToolkit.getScreenSize;
 
   window.minimumSize = new Dimension(screenSize.width/2,screenSize.height/2)
   window.maximize()
@@ -165,8 +163,8 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
 
 
     contents += new Button(Action(getMessage("Show_Community_Chat") + "...") {
-      if(Desktop.isDesktopSupported()) {
-        var desktop =  Desktop.getDesktop();
+      if(Desktop.isDesktopSupported) {
+        var desktop =  Desktop.getDesktop;
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
                 var host = Settings.get("assetserver.host").get
@@ -200,7 +198,7 @@ class ProjectPanel(val mainP: MainPanel, sm: StateMaster)
   // select most recent or first map if not empty
   val initialMap = {
     val mapStates = sm.getMapStates
-    if (!mapStates.isEmpty) {
+    if (mapStates.nonEmpty) {
       val idToLoad =
         if (mapStates.contains(sm.getProj.data.recentMapName))
           sm.getProj.data.recentMapName
