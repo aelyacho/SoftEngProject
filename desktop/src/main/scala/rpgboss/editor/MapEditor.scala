@@ -198,7 +198,7 @@ class MapEditor(
       background = Color.red
       override def deployEvent(): Unit = {
         val teleporterCreator = new TeleporterCreator(getEventId)
-        val teleporterEvent = teleporterCreator.createEvent(getValue, viewStateOpt.get.mapName)
+        val teleporterEvent = teleporterCreator.createEvent(Array(getValue, viewStateOpt.get.mapName))
         drawEvent(teleporterEvent)
       }
     }
