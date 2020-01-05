@@ -12,6 +12,11 @@ import rpgboss.model.resource.RpgMap
 import scala.swing._
 import scala.swing.event._
 
+/** Dialog that managing the tile selection (used to select the wallTile and floorTile)
+ *  Uses the TabbedTileSelector
+ * @param onSelection  function that is triggered each time a tile is selected
+ */
+
 class TileSelectionDialog(owner: Window, sm: StateMaster, onOk: Array[Byte] => Any, onSelection: (Array[Array[Array[Byte]]]) => Unit = (s: Array[Array[Array[Byte]]]) => Unit)
   extends StdDialog(owner, "Tile Selection") {
 
@@ -30,6 +35,8 @@ class TileSelectionDialog(owner: Window, sm: StateMaster, onOk: Array[Byte] => A
     } else None
   }
 
+  /** Added allowMultiSelect to manage the amount of tiles that can be selected at once
+   * (in the case of selecting the wallTile or floorTile, only one tile is allowed) */
   val tileSelector = new TabbedTileSelector(sm, allowMultiselect = false, onSelection = onSelection)//Added allowMultiselect
   tileSelector.selectMap(initialMap)
 
@@ -41,6 +48,7 @@ class TileSelectionDialog(owner: Window, sm: StateMaster, onOk: Array[Byte] => A
     close()
   }
 
+  /** Label indicating whether the selected tile is allowed */
   val canSelectLabel = new Label("YES")
 
   contents = new DesignGridPanel {

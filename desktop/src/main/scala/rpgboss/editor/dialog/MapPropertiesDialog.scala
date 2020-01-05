@@ -37,9 +37,9 @@ class MapPropertiesDialog(
 
     val newMapData = {
       if(model.random){//Added for random map generation (if random boolean is true, get random map data instead of the default data)
-        if(model.setSeed){
+        if(model.setSeed){ // if a seed is given, set the seed
           MapGeneratorConstants.setSeed(model.seed)
-        }else{
+        }else{ // if no seed is given, reset the seed
           MapGeneratorConstants.resetSeed
         }
         RpgMap.randomMapData(model.xSize, model.ySize, model.iter, floorTile, wallTile)
@@ -105,18 +105,26 @@ class MapPropertiesDialog(
     model.iter,
     model.iter = _)
 
-  var floorTile : Array[Byte] = RpgMap.initFloorTile//Added
-  var wallTile : Array[Byte] = RpgMap.initWallTile//Added
+  var floorTile : Array[Byte] = RpgMap.initFloorTile
+  var wallTile : Array[Byte] = RpgMap.initWallTile
 
   val autotiles = Autotile.list(sm.getProj).map(Autotile.readFromDisk(sm.getProj, _))
   val tilesets = Tileset.list(sm.getProj).map(Tileset.readFromDisk(sm.getProj, _))
 
+
+  /** Function used to set a tile
+   *
+   * @param newTile  : The new tile
+   * @param setTile  : The tile 'setter'
+   * @param canPass  : The accepted passability
+   */
   def changeTile(newTile: Array[Byte], setTile: (Array[Byte]) => Unit, canPass: Boolean): Unit ={
     if(canPass == isPassable(newTile)) {
       setTile(newTile)
     }
   }
 
+  /** Gives back whether or not a tile is passable or not */
   def isPassable(tile: Array[Byte]): Boolean ={
     val typ = tile(0)
     val x = tile(1)
@@ -132,6 +140,7 @@ class MapPropertiesDialog(
     passability == 0
   }
 
+  /** This handles the label that shows whether or not the selected tile is allowed (triggered each time a tile is pressed) */
   def onFloorSelection(s: Array[Array[Array[Byte]]]): Unit = {
     if(isPassable(s(0)(0))){
       floorTileSelector.canSelectLabel.text_=("YES")
@@ -139,7 +148,7 @@ class MapPropertiesDialog(
       floorTileSelector.canSelectLabel.text_=("NO")
     }
   }
-
+  /** This handles the label that shows whether or not the selected tile is allowed (triggered each time a tile is pressed) */
   def onWallSelection(s: Array[Array[Array[Byte]]]): Unit = {
     if(isPassable(s(0)(0))){
       wallTileSelector.canSelectLabel.text_=("NO")
@@ -148,10 +157,12 @@ class MapPropertiesDialog(
     }
   }
 
+  /**  changeTile is called onOk, if the passability of the new tile matches the allowed passability, the tile is set */
   val floorTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setFloorTile, true), onFloorSelection)
   val wallTileSelector = new TileSelectionDialog(owner, sm, (selectedTile: Array[Byte]) => changeTile(selectedTile, setWallTile, false), onWallSelection)
 
 
+  /** Buttons that trigger the tileSelectionDialog */
   val floorTileSelectionBtn : Button = Button("") {
     floorTileSelector.open()
   }
@@ -160,8 +171,10 @@ class MapPropertiesDialog(
     wallTileSelector.open()
   }
 
+
   def setFloorTile(newTile: Array[Byte]) = {
     floorTile = newTile
+    /** Updating the icon of the tileSelectionBtn */
     floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   }
 
@@ -172,6 +185,7 @@ class MapPropertiesDialog(
 
   val tileCache = new MapTileCache(sm.assetCache, initialMap)
 
+  /** Setting the icons of the buttons to the icons of the currently selected tiles */
   floorTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((floorTile(0), floorTile(1), floorTile(2), 0))))
   wallTileSelectionBtn.icon_=(new ImageIcon(tileCache.cache.get((wallTile(0), wallTile(1), wallTile(2), 0))))
 
