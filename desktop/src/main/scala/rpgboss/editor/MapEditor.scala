@@ -195,7 +195,6 @@ class MapEditor(
     }
 
     class TeleporterButton extends EventButton("Minimum Distance between Teleporters") {
-      background = Color.red
       override def deployEvent(): Unit = {
         val teleporterCreator = new TeleporterCreator(getEventId)
         val teleporterEvent = teleporterCreator.createEvent(getValue, viewStateOpt.get.mapName)
@@ -217,8 +216,7 @@ class MapEditor(
       resetSpinners()
     }
 
-    case class EventSpinner(onUpdate: Int => Unit = _ => {})
-    extends NumberSpinner(0, 50, 0, onUpdate = onUpdate)
+
 
     val enemySp: EventSpinner = EventSpinner((x: Int) => {enemyBtn.fixedAmount = x})
     val minEnemySp: EventSpinner = EventSpinner((x:Int)=> {enemyBtn.minAmount = x})
