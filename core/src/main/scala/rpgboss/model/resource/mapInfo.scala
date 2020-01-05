@@ -1,5 +1,6 @@
 package rpgboss.model.resource
 
+import rpgboss.model.event.creators.Randomizer
 import rpgboss.model.resource.random_map_generation.{Container, Room}
 import rpgboss.model.resource.random_map_generation.btree.Btree
 
@@ -26,7 +27,6 @@ object mapInfo {
   /** Array containing all the rooms*/
   var rooms:Array[Room] = Array()
 
-  private val numGen = scala.util.Random
   /**Contains the index of the room where the x- and y-coordinates will be chosen from*/
   private var currentRoomIdx = -1
   /**X-coordinate in the chosen room*/
@@ -125,11 +125,11 @@ object mapInfo {
   def getXCoordinate(): Int = {
     /** Check of a random has already been chosen */
     if(currentRoomIdx == -1)
-      currentRoomIdx = numGen.nextInt(totalRooms)
+      currentRoomIdx = Randomizer.getRandomVal(totalRooms)
 
     val room = rooms(currentRoomIdx)
     /** Choosing a random x inside the room */
-    currentX = numGen.nextInt(room.w)
+    currentX =  Randomizer.getRandomVal(room.w)
     val roomX = room.x
     roomX +  currentX
   }
@@ -137,10 +137,9 @@ object mapInfo {
   /** Similar to getXCoordiante*/
   def getYCoordinate(): Int = {
     if(currentRoomIdx == -1)
-      currentRoomIdx = numGen.nextInt(totalRooms)
-
+      currentRoomIdx =  Randomizer.getRandomVal(totalRooms)
     val room = rooms(currentRoomIdx)
-    currentY = numGen.nextInt(room.h)
+    currentY =  Randomizer.getRandomVal(room.h)
     val roomY = room.y
     roomY +  currentY
   }
