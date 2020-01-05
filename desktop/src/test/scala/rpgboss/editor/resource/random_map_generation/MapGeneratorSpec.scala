@@ -1,8 +1,9 @@
 package rpgboss.editor.resource.random_map_generation
 
 import rpgboss.editor.UnitSpec
-import rpgboss.model.resource.random_map_generation.{Container, MapGenerator}
+import rpgboss.model.resource.random_map_generation.{Container, MapGenerator, MapGeneratorConstants}
 import rpgboss.model.resource.random_map_generation.btree.{Btree, EmptyNode}
+import rpgboss.model.resource.random_map_generation.draw_tree.NormalDrawTree
 
 class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
   def generateTreeFixture(w: Int, h: Int, i: Int) = new {
@@ -55,7 +56,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
    */
   def drawLineFixture(w: Int, h: Int, tile: Array[Byte], x1: Int, y1: Int, x2: Int, y2: Int) = new {
     val a = make2dTileArray(w, h)
-    MapGenerator.drawLine(a, tile, x1, y1, x2, y2)
+    NormalDrawTree.drawLine(a, tile, x1, y1, x2, y2)
   }
 
   "drawLine" should "draw a line on the map" in {
@@ -69,7 +70,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
         Array[Byte](3, 1, 1,  3, 1, 1,  3, 1, 1),
         Array[Byte](0, 0, 0,  0, 0, 0,  0, 0, 0)
       )
-    f1.a should equal (expectedResult1)
+    f1.a should contain theSameElementsInOrderAs (expectedResult1)
 
     val f2 = drawLineFixture(3, 3, testTile, 0, 0, 0, 2)
     val expectedResult2 =
@@ -78,7 +79,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
         Array[Byte](3, 1, 1,  0, 0, 0,  0, 0, 0),
         Array[Byte](3, 1, 1,  0, 0, 0,  0, 0, 0)
       )
-    f2.a should equal (expectedResult2)
+    f2.a should contain theSameElementsInOrderAs (expectedResult2)
 
     /** Out of bounds tests
      */
@@ -88,7 +89,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
 
   def drawRectFixture(w: Int, h: Int, tile: Array[Byte], x1: Int, y1: Int, rw: Int, rh: Int, fill: Boolean) = new {
     val a = make2dTileArray(w, h)
-    MapGenerator.drawRect(a, tile, x1, y1, rw, rh, fill)
+    NormalDrawTree.drawRect(a, tile, x1, y1, rw, rh, fill)
   }
 
   "drawRect" should "draw a rect on the map" in {
@@ -103,7 +104,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
         Array[Byte](3, 1, 1,  3, 1, 1,  3, 1, 1,  0, 0, 0),
         Array[Byte](0, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0)
       )
-    f1.a should equal (expectedResult1)
+    f1.a should contain theSameElementsInOrderAs (expectedResult1)
 
     val f2 = drawRectFixture(4, 4, testTile, 1, 1, 3, 3, true)
     val expectedResult2 =
@@ -113,7 +114,7 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
         Array[Byte](0, 0, 0,  3, 1, 1,  3, 1, 1,  3, 1, 1),
         Array[Byte](0, 0, 0,  3, 1, 1,  3, 1, 1,  3, 1, 1)
       )
-    f2.a should equal (expectedResult2)
+    f2.a should contain theSameElementsInOrderAs (expectedResult2)
 
     /** Out of bounds tests
      */
@@ -123,7 +124,32 @@ class MapGeneratorSpec extends UnitSpec with TileArrayMaker {
 
   "drawTree" should "draw the tree on the map" in {
     /**
-     *  drawTree is based on on the drawSquare method
+     *  Testing the drawTree method, by drawing a known tree in an array and comparing the arrays
      */
+    // A dummy tiles
+    val testFloorTile = Array[Byte](3, 1, 1)
+    val testWallTile = Array[Byte](2, 2, 2)
+    val testMapArray = make2dTileArray(10, 10)
+
+    // Setting the seed to 0
+    MapGeneratorConstants.setSeed(0)
+
+    val f = generateTreeFixture(10, 10, 1)
+    NormalDrawTree.drawTree(testMapArray, f.tree, testFloorTile, testWallTile)
+
+    val expectedMapArray = Array(
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2, 2, 2, 2),
+        Array(2, 2, 2, 2, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 2, 2, 2, 2, 2, 2)
+    )
+    testMapArray should contain theSameElementsInOrderAs (expectedMapArray)
+
   }
 }

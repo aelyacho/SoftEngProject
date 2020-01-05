@@ -42,16 +42,6 @@ class MapGeneratorConstantsSpec extends UnitSpec with TileArrayMaker {
       val testWallTile: Array[Byte] = Array(2, 8, 7)
 
 
-      // Tests for the pipeline
-      MapGeneratorConstants.setSeed(0)
-      println(MapGeneratorConstants.randomizer.nextInt(100), "should be 60")
-
-      MapGeneratorConstants.setSeed(25)
-      println(MapGeneratorConstants.randomizer.nextInt(25), "should be 6")
-
-      MapGeneratorConstants.setSeed(50)
-      println(MapGeneratorConstants.randomizer.nextInt(85), "should be 17")
-
       // Map 1
       MapGeneratorConstants.setSeed(seed)
       val testMapArray1 = make2dTileArray(width, height)
