@@ -1,6 +1,14 @@
 package rpgboss.editor
 
-import rpgboss.lib._
+import java.awt.event.{InputEvent, KeyEvent, MouseEvent}
+
+import javax.swing.event.{ChangeEvent, ChangeListener}
+import javax.swing.{ImageIcon, JOptionPane, KeyStroke}
+import rpgboss.editor.Internationalized._
+import rpgboss.editor.dialog.{EventDialog, EventInstanceDialog}
+import rpgboss.editor.imageset.selector.TabbedTileSelector
+import rpgboss.editor.misc.GraphicsUtils._
+import rpgboss.editor.misc._
 import rpgboss.editor.uibase.SwingUtils._
 import rpgboss.model._
 import rpgboss.model.Constants._
@@ -34,10 +42,14 @@ import javax.swing.ImageIcon
 import rpgboss.editor.dialog.EventInstanceDialog
 import rpgboss.editor.Internationalized._
 import rpgboss.editor.util.MouseUtil
+import rpgboss.lib._
+import rpgboss.model._
+import rpgboss.model.event.RpgEvent
 import rpgboss.model.event.creators.{EnemyCreator, NPCCreator, TeleporterCreator, TreasureChestCreator}
 import rpgboss.model.resource.mapInfo
 
-import scala.io.Source
+import scala.swing._
+import scala.swing.event._
 
 /**
  * Panel grouping together the detailed view of the map, with its toolbar (drawing tools, layer selector)
@@ -126,15 +138,15 @@ class MapEditor(
   toolbar.contents += Swing.HStrut(16)
 
   val undoButton = new Button() {
-    def refreshEnabled(vs: MapViewState) = {
+    def refreshEnabled(vs: MapViewState): Unit = {
       action.enabled = vs.canUndo()
     }
 
     action = new Action(getMessage("Undo")) {
       enabled = false
 
-      def apply() = {
-        viewStateOpt.map(vs => {
+      def apply(): Unit = {
+        viewStateOpt.foreach(vs => {
           logger.info(getMessage("Undo_Called"))
           vs.undo()
           refreshEnabled(vs)
@@ -153,85 +165,124 @@ class MapEditor(
         "hendrik-weiler-theme/undo.png"))
   }
 
-  val enemyButton = new Button() {
-    var amount = 0
-    action = new Action("Enemies") {
-      def apply() = {
-        val enemyCreator = new EnemyCreator(getEventId())
-        for (_ <- 0 to amount) {
+
+  def showTextDialog(title: String, textToDisplay: String) {
+    JOptionPane.showMessageDialog(
+      null,
+      textToDisplay,
+      title,
+      JOptionPane.WARNING_MESSAGE)
+  }
+
+  val eventConfigButton: Button = new Button(){
+    action = new Action("Event generation") {
+      override def apply(): Unit = {
+        /** the event configuration dialog can only be opened if the random map generation has been enabled*/
+        if(mapInfo.randomEnabled) {
+          eventGenConfigDialog.open()
+        } else
+        showTextDialog("Warning Random Map Generation", "Enable Random Map Generation in Map Properties first before configuring the events !")
+      }
+    }
+    icon = new ImageIcon(Utils.readClasspathImage(
+      "hendrik-weiler-theme/tool.png"))
+  }
+
+  toolbar.contents += undoButton
+  toolbar.contents += eventConfigButton
+
+  val eventGenConfigDialog: StdDialog = new StdDialog(projectPanel.mainP.topWin, "events configuration") {
+    centerDialog(new Dimension(200, 200))
+
+    class EnemyButton extends EventButton("Enemies") {
+      override def deployEvent(): Unit = {
+        val enemyCreator = new EnemyCreator(getEventId)
+        for (_ <- 1 to getValue) {
           val enemyEvent = enemyCreator.createEvent()
           drawEvent(enemyEvent)
         }
       }
     }
-    icon = new ImageIcon(Utils.readClasspathImage(
-      "hendrik-weiler-theme/tool.png"))
-  }
 
-  val npcButton = new Button() {
-    var amount = 0
-    action = new Action("NPC's"){
-      def apply() = {
-        val npcCreator = new NPCCreator(getEventId())
-        for (_ <- 0 to amount) {
+    class NpcButton extends EventButton("NPC's") {
+      override def deployEvent(): Unit = {
+        val npcCreator = new NPCCreator(getEventId)
+        for (_ <- 1 to getValue) {
           val npcEvent = npcCreator.createEvent()
           drawEvent(npcEvent)
         }
       }
     }
-    icon = new ImageIcon(Utils.readClasspathImage(
-      "hendrik-weiler-theme/tool.png"))
-  }
 
-  val chestButton = new Button() {
-    var amount = 0
-    action = new Action("Chests"){
-      def apply() = {
-        val chestCreator = new TreasureChestCreator(getEventId())
-        for (_ <- 0 to amount) {
+    class ChestButton extends EventButton("Chests") {
+      override def deployEvent(): Unit = {
+        val chestCreator = new TreasureChestCreator(getEventId)
+        for (_ <- 1 to getValue) {
           val chestEvent = chestCreator.createEvent()
           drawEvent(chestEvent)
         }
       }
     }
-    icon = new ImageIcon(Utils.readClasspathImage(
-      "hendrik-weiler-theme/tool.png"))
-  }
 
-  val teleporterButton = new Button() {
-    var minDistance = 0
-    action = new Action("Teleporters"){
-      def apply() = {
-        val teleporterCreator = new TeleporterCreator(getEventId())
-       // for (_ <- 0 to 10) {
-          val teleportersEvent = teleporterCreator.createEvent(minDistance, viewStateOpt.get.mapName)
-          drawEvent(teleportersEvent)
-       // }
+    class TeleporterButton extends EventButton("Minimum Distance between Teleporters") {
+      override def deployEvent(): Unit = {
+        val teleporterCreator = new TeleporterCreator(getEventId)
+        val teleporterEvent = teleporterCreator.createEvent(Array(getValue, viewStateOpt.get.mapName))
+        drawEvent(teleporterEvent)
       }
     }
-    icon = new ImageIcon(Utils.readClasspathImage(
-      "hendrik-weiler-theme/tool.png"))
+    /** the different deploy buttons */
+    val enemyBtn = new EnemyButton
+    val npcbtn = new NpcButton
+    val chestBtn = new ChestButton
+    val teleporterBtn = new TeleporterButton
+
+    override def okFunc(): Unit = {
+      /** close and reset the spinners to 0 for the next opening of the dialog */
+      close()
+      resetSpinners()
+    }
+
+    override def cancelFunc(): Unit = {
+      /** reset the spinners to 0 for the next opening of the dialog */
+      resetSpinners()
+    }
+
+
+
+    val enemySp: EventSpinner = EventSpinner((x: Int) => {enemyBtn.fixedAmount = x})
+    val minEnemySp: EventSpinner = EventSpinner((x:Int)=> {enemyBtn.minAmount = x})
+    val maxEnemySp: EventSpinner = EventSpinner((x:Int)=> {enemyBtn.maxAmount = x})
+
+    val npcSp: EventSpinner = EventSpinner((x:Int)=> {npcbtn.fixedAmount = x})
+    val minNpcSp: EventSpinner = EventSpinner((x:Int)=> {npcbtn.minAmount = x})
+    val maxNpcSp: EventSpinner = EventSpinner((x:Int)=> {npcbtn.maxAmount = x})
+
+    val chestSp: EventSpinner = EventSpinner((x:Int)=> {chestBtn.fixedAmount = x})
+    val minChestSp: EventSpinner = EventSpinner((x:Int)=> {chestBtn.minAmount = x})
+    val maxChestSp: EventSpinner = EventSpinner((x:Int)=> {chestBtn.maxAmount = x})
+
+    val teleporterSp: EventSpinner = EventSpinner((x:Int)=> {teleporterBtn.fixedAmount = x})
+    val minTeleporterSp: EventSpinner = EventSpinner((x:Int)=> {teleporterBtn.minAmount = x})
+    val maxTeleporterSp: EventSpinner = EventSpinner((x:Int)=> {teleporterBtn.maxAmount = x})
+
+    val eventSpinners: List[EventSpinner] = List[EventSpinner](enemySp, minEnemySp, maxEnemySp, npcSp, minNpcSp, maxNpcSp, chestSp, minChestSp, maxChestSp, teleporterSp, minTeleporterSp, maxTeleporterSp)
+
+    /** reset the spinners to 0 for the next opening of the dialog */
+    private def resetSpinners(): Unit = eventSpinners.foreach(sp => sp.setValue(0))
+
+    contents = new DesignGridPanel {
+      row().grid(lbl("Enemies: ")).add(lbl("Fixed value:")).add(enemySp).add(lbl("min value:")).add(minEnemySp).add(lbl("max value:")).add(maxEnemySp).add(enemyBtn)
+      row().grid(lbl("NPC's: ")).add(lbl("Fixed value:")).add(npcSp).add(lbl("min value:")).add(minNpcSp).add(lbl("max value:")).add(maxNpcSp).add(npcbtn)
+      row().grid(lbl("Treasure Chests: ")).add(lbl("Fixed value:")).add(chestSp).add(lbl("min value:")).add(minChestSp).add(lbl("max value:")).add(maxChestSp).add(chestBtn)
+      row().grid(lbl("Min. distance Teleporters: ")).add(lbl("Fixed value:")).add(teleporterSp).add(lbl("min value:")).add(minTeleporterSp).add(lbl("max value:")).add(maxTeleporterSp).add(teleporterBtn)
+      addButtons(okBtn, cancelBtn)
+    }
+
+    reactions += {
+      case MouseClicked(`okBtn`, _, _, 2, _) => okBtn.doClick()
+    }
   }
-
-  val enemySpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {enemyButton.amount = x; println("Amount of enemies desired: "+x)})
-  val npcSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {npcButton.amount = x; println("Amount of NPC's desired: "+x)})
-  val chestSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {chestButton.amount = x; println("Amount of treasure chests desired: "+x)})
-  val teleporterSpinner = new NumberSpinner(0, 50, 0, (x:Int)=> {teleporterButton.minDistance = x; println("Min. distance btwn teleporters desired: "+x)})
-
-  toolbar.contents += undoButton
-
-  toolbar.contents += enemySpinner
-  toolbar.contents += enemyButton
-
-  toolbar.contents += npcSpinner
-  toolbar.contents += npcButton
-
-  toolbar.contents += chestSpinner
-  toolbar.contents += chestButton
-
-  toolbar.contents += teleporterSpinner
-  toolbar.contents += teleporterButton
-
 
   toolbar.contents += Swing.HStrut(16)
 
@@ -324,16 +375,20 @@ class MapEditor(
   //--- EVENT POPUP MENU ---//
   import MapLayers._
 
-  def getEventId() = {
-    val vs = viewStateOpt.get
-    vs.mapMeta.lastGeneratedEventId
+  def getEventId: Int = {
+    if (viewStateOpt.isEmpty) {
+       0
+    } else {
+      val vs = viewStateOpt.get
+      vs.mapMeta.lastGeneratedEventId
+    }
   }
 
   /** Draws the events on the map
    *
    * @param eventArr the rpgEvent that has to be drawn on the map
    * */
-  def drawEvent(eventArr:Array[RpgEvent]) = viewStateOpt map { vs =>
+  def drawEvent(eventArr:Array[RpgEvent]): Unit = viewStateOpt foreach { vs =>
     eventArr.foreach(event => {
       vs.begin()
       incrementEventId(vs)
@@ -379,7 +434,7 @@ class MapEditor(
       if (isNewEvent) {
         incrementEventId(vs)
       }
-      
+
       vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))

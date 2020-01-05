@@ -37,6 +37,9 @@ class NumberSpinner(
   }
 }
 
+case class EventSpinner(onUpdate: Int => Unit = _ => {})
+  extends NumberSpinner(0, 50, 0, onUpdate = onUpdate)
+
 class FloatSpinner(
   min: Float,
   max: Float,
@@ -73,3 +76,4 @@ class FloatSpinner(
     spinner.setEnabled(b)
   }
 }
+
