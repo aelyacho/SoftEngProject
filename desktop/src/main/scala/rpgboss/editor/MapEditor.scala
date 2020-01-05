@@ -1,6 +1,5 @@
 package rpgboss.editor
 
-import java.awt.Color
 import java.awt.event.{InputEvent, KeyEvent, MouseEvent}
 
 import javax.swing.event.{ChangeEvent, ChangeListener}
@@ -148,6 +147,7 @@ class MapEditor(
   val eventConfigButton: Button = new Button(){
     action = new Action("Event generation") {
       override def apply(): Unit = {
+        /** the event configuration dialog can only be opened if the random map generation has been enabled*/
         if(mapInfo.randomEnabled) {
           eventGenConfigDialog.open()
         } else
@@ -201,18 +201,20 @@ class MapEditor(
         drawEvent(teleporterEvent)
       }
     }
-
+    /** the different deploy buttons */
     val enemyBtn = new EnemyButton
     val npcbtn = new NpcButton
     val chestBtn = new ChestButton
     val teleporterBtn = new TeleporterButton
 
     override def okFunc(): Unit = {
+      /** close and reset the spinners to 0 for the next opening of the dialog */
       close()
       resetSpinners()
     }
 
     override def cancelFunc(): Unit = {
+      /** reset the spinners to 0 for the next opening of the dialog */
       resetSpinners()
     }
 
@@ -238,6 +240,7 @@ class MapEditor(
 
     /** reset the spinners to 0 for the next opening of the dialog */
     private def resetSpinners(): Unit = eventSpinners.foreach(sp => sp.setValue(0))
+
     contents = new DesignGridPanel {
       row().grid(lbl("Enemies: ")).add(lbl("Fixed value:")).add(enemySp).add(lbl("min value:")).add(minEnemySp).add(lbl("max value:")).add(maxEnemySp).add(enemyBtn)
       row().grid(lbl("NPC's: ")).add(lbl("Fixed value:")).add(npcSp).add(lbl("min value:")).add(minNpcSp).add(lbl("max value:")).add(maxNpcSp).add(npcbtn)

@@ -3,6 +3,10 @@ package rpgboss.editor
 import java.util.concurrent.ThreadLocalRandom
 import scala.swing.{Action, Button}
 
+/**
+ *  Event Button: used to  implement the different types of event buttons (npc, enemies,..)
+ *  The buttons only differ in deployEvent, this is why the functions is only declared here
+ * */
 abstract class EventButton(evType: String) extends Button {
   var fixedAmount = 0
   var minAmount = 0
