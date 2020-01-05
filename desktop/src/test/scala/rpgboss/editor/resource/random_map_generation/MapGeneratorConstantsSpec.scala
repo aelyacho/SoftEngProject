@@ -8,12 +8,12 @@ import rpgboss.model.resource.random_map_generation.{MapGenerator, MapGeneratorC
 
 class MapGeneratorConstantsSpec extends UnitSpec with TileArrayMaker {
 
-  "For the same seed, the generated maps" should "be the same" in {
+  "For the same seed, the same behaviour of the random object" should "be the same" in {
 
     /** Procedure used to create events for the tests
      *
      * @param a   : The amount of events to spawn (Enemies and NPCs)
-     * @return    : Returns a list of all the spawned events
+     * @return    : Returns a list of the spawned events
      */
     def spawnEvents(a:Int)={
       val enemyCreator = new EnemyCreator(0)

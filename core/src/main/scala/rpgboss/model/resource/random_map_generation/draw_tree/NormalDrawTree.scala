@@ -96,6 +96,5 @@ object NormalDrawTree extends DrawTreeStrategy {
       }
     }
     t.foreach(drawCorridor)
-    println(a.deep.mkString("\n"))
   }
 }
