@@ -197,7 +197,7 @@ class MapEditor(
     class TeleporterButton extends EventButton("Minimum Distance between Teleporters") {
       override def deployEvent(): Unit = {
         val teleporterCreator = new TeleporterCreator(getEventId)
-        val teleporterEvent = teleporterCreator.createEvent(getValue, viewStateOpt.get.mapName)
+        val teleporterEvent = teleporterCreator.createEvent(Array(getValue, viewStateOpt.get.mapName))
         drawEvent(teleporterEvent)
       }
     }

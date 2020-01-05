@@ -10,7 +10,7 @@ class TeleporterCreatorSpec extends UnitSpec{
   val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
   mapInfo.createRepr(btree)
   val creator = new TeleporterCreator(0)
-  val teleporters = creator.createEvent(20, "test")
+  val teleporters = creator.createEvent(Array(20, "test"))
   val teleporter1 = teleporters(0)
   val teleporter2 = teleporters(1)
 

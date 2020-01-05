@@ -5,9 +5,10 @@ import rpgboss.model.event.{RpgEvent, RpgEventState, Teleport}
 import rpgboss.model.resource.mapInfo
 
 class TeleporterCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
-  def createEvent(): Array[RpgEvent] = Array(RpgEvent())
+  def createEvent(args:Array[Any]): Array[RpgEvent] = {
+    val distance = args(0).asInstanceOf[Int]
+    val mapName = args(1).asInstanceOf[String]
 
-  def createEvent(distance: Int, mapName:String): Array[RpgEvent] = {
     val teleporter1 = RpgEventState()
     val x1 = mapInfo.getXCoordinate() + 0.5f
     val y1 = mapInfo.getYCoordinate() + 0.5f

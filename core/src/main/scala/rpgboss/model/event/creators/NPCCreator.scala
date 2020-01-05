@@ -23,7 +23,7 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     }
   }
 
-  def createEvent(): Array[RpgEvent] = {
+  def createEvent(args:Array[Any] = Array()): Array[RpgEvent] = {
     val state = RpgEventState()
     val x = mapInfo.getXCoordinate() + 0.5f
     val y = mapInfo.getYCoordinate() + 0.5f
