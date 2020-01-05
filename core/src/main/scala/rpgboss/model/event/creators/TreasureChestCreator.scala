@@ -5,7 +5,7 @@ import rpgboss.model.event.{AddRemoveGold, IntParameter, RpgEvent, RpgEventState
 import rpgboss.model.resource.mapInfo
 
 class TreasureChestCreator(eventId:Int) extends RpgEventCreator(eventId) {
-  def createEvent(): Array[RpgEvent] = {
+  def createEvent(args:Array[Any] = Array()): Array[RpgEvent] = {
     val amountOfGold = Randomizer.getRandomVal(300) + 1
 
     val closedState = RpgEventState()

@@ -204,7 +204,7 @@ class MapEditor(
       def apply() = {
         val teleporterCreator = new TeleporterCreator(getEventId())
        // for (_ <- 0 to 10) {
-          val teleportersEvent = teleporterCreator.createEvent(minDistance, viewStateOpt.get.mapName)
+          val teleportersEvent = teleporterCreator.createEvent(Array(minDistance, viewStateOpt.get.mapName))
           drawEvent(teleportersEvent)
        // }
       }
