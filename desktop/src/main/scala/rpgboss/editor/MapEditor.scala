@@ -379,6 +379,7 @@ class MapEditor(
       if (isNewEvent) {
         incrementEventId(vs)
       }
+      vs.nextMapData.events = vs.nextMapData.events.updated(e.id, e)
       commitVS(vs)
       repaintRegion(TileRect(e.x.toInt, e.y.toInt))
     }
