@@ -1,18 +1,14 @@
 package core.rpgboss.model.event.creators
 
 import core.UnitSpec
-import rpgboss.model.event.Teleport
 import rpgboss.model.event.creators.TeleporterCreator
-import rpgboss.model.resource.random_map_generation.MapGenerator
-import rpgboss.model.resource.{RpgMap, mapInfo}
+import rpgboss.model.event.{RpgEvent, Teleport}
 
-class TeleporterCreatorSpec extends UnitSpec{
-  val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
-  mapInfo.createRepr(btree)
+class TeleporterCreatorSpec extends UnitSpec with GeneratedMap{
   val creator = new TeleporterCreator(0)
-  val teleporters = creator.createEvent(20, "test")
-  val teleporter1 = teleporters(0)
-  val teleporter2 = teleporters(1)
+  val teleporters: Array[RpgEvent] = creator.createEvent(20, "test")
+  val teleporter1: RpgEvent = teleporters(0)
+  val teleporter2: RpgEvent = teleporters(1)
 
   "TeleporterCreator" should "create an event corresponding to a teleporter" in {
     val teleporter1Behaviour = teleporter1.states(0).cmds(0)

@@ -1,18 +1,14 @@
 package core.rpgboss.model.event.creators
 
 import core.UnitSpec
-import rpgboss.model.resource.{RpgMap, mapInfo}
-import rpgboss.model.event.{AddRemoveGold, ShowText}
 import rpgboss.model.event.creators.TreasureChestCreator
-import rpgboss.model.resource.random_map_generation.MapGenerator
+import rpgboss.model.event._
 
-class TreasureChestCreatorSpec extends UnitSpec {
-  val btree = MapGenerator.generateTree(RpgMap.maxXSize, RpgMap.maxYSize, 5)
-  mapInfo.createRepr(btree)
+class TreasureChestCreatorSpec extends UnitSpec with GeneratedMap {
   val creator = new TreasureChestCreator(0)
-  val chest = creator.createEvent()(0)
-  val chestStates = chest.states
-  val chestBehaviour1 = chestStates(0).cmds(0)
+  val chest: RpgEvent = creator.createEvent()(0)
+  val chestStates: Array[RpgEventState] = chest.states
+  val chestBehaviour1: EventCmd = chestStates(0).cmds(0)
 
   "TreasureChestCreator" should "create an event corresponding to a treasure chest" in {
     /** A treasure chest is recognisable by its ability to give gold to the player */
