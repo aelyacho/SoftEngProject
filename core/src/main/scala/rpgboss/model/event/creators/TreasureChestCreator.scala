@@ -21,6 +21,7 @@ class TreasureChestCreator(eventId:Int) extends RpgEventCreator(eventId) {
     val y = mapInfo.getYCoordinate() + 0.5f
     val newId:Int = (() => {currentEventId += 1; currentEventId})()
 
+    mapInfo.eventAdded()
     Array(RpgEvent(newId, "Event%05d".format(newId), x, y, Array(closedState, openedState)))
   }
 }

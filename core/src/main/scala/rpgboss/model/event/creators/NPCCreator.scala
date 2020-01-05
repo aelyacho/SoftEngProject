@@ -1,10 +1,8 @@
 package rpgboss.model.event.creators
 
 import rpgboss.model.SpriteSpec
-import rpgboss.model.event.{AnimationType, EventCmd, IntArrayParameter, OpenStore, RpgEvent, RpgEventState, ShowText}
+import rpgboss.model.event._
 import rpgboss.model.resource.mapInfo
-
-import scala.io.Source
 
 class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
   private val npcAnimation = List(AnimationType.NONE.id, AnimationType.RANDOM_MOVEMENT.id)
@@ -32,6 +30,7 @@ class NPCCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     state.sprite = Some(SpriteSpec("sys/vx_chara01_a.png", Randomizer.getRandomVal(8),Randomizer.getRandomVal(3),Randomizer.getRandomVal(4)))
     state.animationType = npcAnimation(Randomizer.getRandomVal(2))
     state.cmds = getRandomAction(Randomizer.getRandomVal(2))
+    mapInfo.eventAdded()
     Array(RpgEvent(newId, "Event%05d".format(newId), x, y, Array(state)))
   }
 }

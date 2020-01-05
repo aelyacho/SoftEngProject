@@ -13,7 +13,7 @@ class TeleporterCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     val y1 = mapInfo.getYCoordinate() + 0.5f
     val newId1:Int = (() => {currentEventId += 1; currentEventId})()
     val newUserY1 = y1 + 1f
-    mapInfo.forgetCoordinates()
+    mapInfo.eventAdded()
 
     val teleporter2 = RpgEventState()
     var x2 = mapInfo.getXCoordinate() + 0.5f
@@ -22,11 +22,11 @@ class TeleporterCreator(eventId:Int) extends RpgEventCreator(eventId:Int) {
     var newUserY2 = y2 + 1f
 
     while(Math.abs(x1 - x2) < distance || Math.abs(y1 - y2) < distance) {
-      mapInfo.forgetCoordinates()
       x2 = mapInfo.getXCoordinate() + 0.5f
       y2 = mapInfo.getYCoordinate() + 0.5f
       newUserY2 = y2 + 1f
     }
+    mapInfo.eventAdded()
 
     teleporter1.sprite = Some(SpriteSpec("sys/!object.png",2,0,0))
     teleporter1.cmds = Array(Teleport(MapLoc(mapName, x2, newUserY2)))

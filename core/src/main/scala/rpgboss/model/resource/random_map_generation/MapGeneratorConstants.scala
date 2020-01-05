@@ -2,6 +2,7 @@ package rpgboss.model.resource.random_map_generation
 
 object MapGeneratorConstants {
 
+
   /** setSeed is used to change the seed of the randomizer object
    * @param seed the seed(Int)
    */

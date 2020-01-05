@@ -1,8 +1,8 @@
 package core.rpgboss.model.event.creators
 
 import core.UnitSpec
-import rpgboss.model.event.{AnimationType, EventCmd, StartBattle}
 import rpgboss.model.event.creators.EnemyCreator
+import rpgboss.model.event.{AnimationType, RpgEventState, StartBattle}
 
 /**
  * test creator, random sprites, animations, actions
@@ -10,9 +10,9 @@ import rpgboss.model.event.creators.EnemyCreator
 
 class EnemyCreatorSpec extends UnitSpec with GeneratedMap {
   val enemyCreator = new EnemyCreator(0)
-  val enemyEvent1State = enemyCreator.createEvent()(0).states(0)
-  val enemyEvent2State = enemyCreator.createEvent()(0).states(0)
-  val enemyEvent3State = enemyCreator.createEvent()(0).states(0)
+  val enemyEvent1State: RpgEventState = enemyCreator.createEvent()(0).states(0)
+  val enemyEvent2State: RpgEventState = enemyCreator.createEvent()(0).states(0)
+  val enemyEvent3State: RpgEventState = enemyCreator.createEvent()(0).states(0)
 
   "EnemyCreator" should "create events with the behaviour of an enemy" in {
 

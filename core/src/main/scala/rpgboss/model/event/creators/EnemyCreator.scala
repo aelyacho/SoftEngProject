@@ -15,6 +15,7 @@ class EnemyCreator (eventId:Int) extends RpgEventCreator(eventId) {
       state.sprite = Some(SpriteSpec("sys/vx_chara08_a.png" ,Randomizer.getRandomVal(8),Randomizer.getRandomVal(3),Randomizer.getRandomVal(4)))
       state.animationType = enemyAnimation(Randomizer.getRandomVal(2))
       state.cmds = Array(StartBattle(IntParameter(Randomizer.getRandomVal(6))))
+      mapInfo.eventAdded()
       Array(RpgEvent(newId, "Event%05d".format(newId), x, y, Array(state)))
     }
 }

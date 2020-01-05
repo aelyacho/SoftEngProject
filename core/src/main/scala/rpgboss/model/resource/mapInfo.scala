@@ -141,7 +141,7 @@ object mapInfo {
     val room = rooms(currentRoomIdx)
     currentY =  Randomizer.getRandomVal(room.h)
     val roomY = room.y
-    roomY +  currentY
+    roomY + currentY
   }
 
   /** Used to signal that an event has been added */
